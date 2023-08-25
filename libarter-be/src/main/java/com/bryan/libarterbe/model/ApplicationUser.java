@@ -1,6 +1,7 @@
 package com.bryan.libarterbe.model;
 
 import jakarta.persistence.*;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,6 +20,9 @@ public class ApplicationUser implements UserDetails {
     private String password;
 
     @Column(unique = true)
+    private String email;
+
+    @Column(unique = true)
     private String username;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -34,11 +38,12 @@ public class ApplicationUser implements UserDetails {
         this.authorities = new HashSet<>();
     }
 
-    public ApplicationUser(Integer id, String password, String username, Set<Role> authorities) {
+    public ApplicationUser(Integer id, String password, String username, String email, Set<Role> authorities) {
         this.id = id;
         this.password = password;
         this.username = username;
         this.authorities = authorities;
+        this.email = email;
     }
 
     public Integer getId() {
@@ -56,6 +61,14 @@ public class ApplicationUser implements UserDetails {
 
     public void setAuthorities(Set<Role> authorities) {
         this.authorities = authorities;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

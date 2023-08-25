@@ -32,7 +32,7 @@ public class LibarterBeApplication {
 			Set<Role> roles = new HashSet<>();
 			roles.add(adminRole);
 
-			ApplicationUser admin = new ApplicationUser(1,"admin", passwordEncoder.encode("password"), roles);
+			ApplicationUser admin = new ApplicationUser(1, "{bcrypt}" + passwordEncoder.encode("password"), "admin","monticelli.bryan@gmail.com", roles);
 
 			userRepository.save(admin);
 		};
