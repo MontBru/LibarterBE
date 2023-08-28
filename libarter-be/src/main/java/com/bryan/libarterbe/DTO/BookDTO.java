@@ -3,6 +3,9 @@ package com.bryan.libarterbe.DTO;
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Book;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class BookDTO {
     private String name;
     private String author;
@@ -13,6 +16,13 @@ public class BookDTO {
     public static BookDTO bookToBookDTO(Book book)
     {
         return new BookDTO(book.getName(),book.getAuthor(),book.getDescription(), book.getUser().getId());
+    }
+
+    public static List<BookDTO> booklistToBookDTOlist(List<Book> books)
+    {
+        return books.stream()
+            .map(BookDTO::bookToBookDTO)
+            .collect(Collectors.toList());
     }
 
     public BookDTO(String name, String author, String description, int userId) {

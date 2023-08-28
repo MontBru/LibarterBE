@@ -9,11 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.bryan.libarterbe.service.BookService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user/book")
@@ -55,9 +52,7 @@ public class BookController {
     @Transactional
     public ResponseEntity<List<BookDTO>> getAllBooks(){
         List<Book> books = bookService.getAllBooks();
-        List<BookDTO> bookDTOs = books.stream()
-                .map(BookDTO::bookToBookDTO)
-                .collect(Collectors.toList());
+        List<BookDTO> bookDTOs = BookDTO.booklistToBookDTOlist(books);
         return ResponseEntity.ok(bookDTOs);
     }
 
