@@ -1,40 +1,59 @@
 package com.bryan.libarterbe.controller;
 
+import com.bryan.libarterbe.DTO.BookDTO;
 import com.bryan.libarterbe.model.Book;
+import com.bryan.libarterbe.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.bryan.libarterbe.service.BookService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/book")
+@RequestMapping("/user/book")
 @CrossOrigin
 public class BookController {
     @Autowired
     private BookService bookService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/add")
-    public ResponseEntity<Book> add(@RequestBody Book book){
-        return ResponseEntity.ok(bookService.saveBook(book));
+    public ResponseEntity<Book> add(@RequestBody BookDTO bookDTO){
+        try {
+            Book book = new Book(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getDescription(), userService.getUserById(bookDTO.getUserId()));
+            return ResponseEntity.ok(bookService.saveBook(book));
+        }catch(Exception e)
+        {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<Book> getById(@PathVariable int id) {
+    public ResponseEntity<BookDTO> getById(@PathVariable int id) {
         Optional<Book> bookOptional = bookService.getBookById(id);
 
         if (bookOptional.isPresent()) {
             Book book = bookOptional.get();
-            return ResponseEntity.ok(book); // Return 200 OK with the book entity
+            BookDTO bookDTO = BookDTO.bookToBookDTO(book);
+            return ResponseEntity.ok(bookDTO); // Return 200 OK with the book entity
         } else {
             return ResponseEntity.notFound().build(); // Return 404 Not Found
         }
     }
     @GetMapping("/getAll")
-    public ResponseEntity<List<Book>> getAllBooks(){
-        return ResponseEntity.ok(bookService.getAllBooks());
+    public ResponseEntity<List<BookDTO>> getAllBooks(){
+        List<Book> books = bookService.getAllBooks();
+        List<BookDTO> bookDTOs = books.stream()
+                .map(BookDTO::bookToBookDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(bookDTOs);
     }
 
     @DeleteMapping("deleteById/{id}")

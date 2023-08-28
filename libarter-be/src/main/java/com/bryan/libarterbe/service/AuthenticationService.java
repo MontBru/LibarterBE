@@ -58,11 +58,10 @@ public class AuthenticationService {
 
             String token = tokenService.generateJwt(auth);
 
-            return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
+            return new LoginResponseDTO(userRepository.findByUsername(username).get().getId(), token);
 
         }catch (AuthenticationException e){
-            e.printStackTrace();
-            return new LoginResponseDTO(null, "");
+            throw e;
         }
 
     }

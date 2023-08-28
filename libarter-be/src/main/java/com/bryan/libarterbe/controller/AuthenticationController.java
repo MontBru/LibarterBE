@@ -6,6 +6,7 @@ import com.bryan.libarterbe.DTO.RegistrationDTO;
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +24,12 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public LoginResponseDTO loginUser(@RequestBody LoginDTO body){
-        return authenticationService.loginUser(body.getUsername(), body.getPassword());
+        try {
+            return authenticationService.loginUser(body.getUsername(), body.getPassword());
+        }catch (Exception e)
+        {
+            throw e;
+        }
     }
 
 }

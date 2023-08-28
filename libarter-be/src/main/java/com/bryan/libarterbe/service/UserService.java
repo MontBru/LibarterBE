@@ -4,6 +4,7 @@ import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.repository.RoleRepository;
 import com.bryan.libarterbe.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,6 +30,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("couldn't find user with this username"));
     }
 
+    public ApplicationUser getUserByUsername(String username) throws UsernameNotFoundException{
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("couldn't find user with this username"));
+    }
+
+    public ApplicationUser getUserById(int id) throws Exception {
+        return userRepository.findById(id).orElseThrow(() -> new Exception("couldn't find user with this username"));
+    }
     public List<ApplicationUser> getAllUsers()
     {
         return userRepository.findAll();

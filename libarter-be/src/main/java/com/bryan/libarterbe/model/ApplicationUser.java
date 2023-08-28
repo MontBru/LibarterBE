@@ -1,13 +1,10 @@
 package com.bryan.libarterbe.model;
 
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name="users")
@@ -24,6 +21,9 @@ public class ApplicationUser implements UserDetails {
 
     @Column(unique = true)
     private String username;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Book> books = new ArrayList<Book>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -86,6 +86,14 @@ public class ApplicationUser implements UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
     }
 
     @Override
