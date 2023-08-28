@@ -3,6 +3,7 @@ package com.bryan.libarterbe.controller;
 import com.bryan.libarterbe.DTO.BookDTO;
 import com.bryan.libarterbe.model.Book;
 import com.bryan.libarterbe.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +26,12 @@ public class BookController {
     private UserService userService;
 
     @PostMapping("/add")
-    public ResponseEntity<Book> add(@RequestBody BookDTO bookDTO){
+    @Transactional
+    public ResponseEntity<BookDTO> add(@RequestBody BookDTO bookDTO){
         try {
             Book book = new Book(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getDescription(), userService.getUserById(bookDTO.getUserId()));
-            return ResponseEntity.ok(bookService.saveBook(book));
+            bookService.saveBook(book);
+            return ResponseEntity.ok(bookDTO);
         }catch(Exception e)
         {
             return ResponseEntity.notFound().build();
@@ -36,6 +39,7 @@ public class BookController {
     }
 
     @GetMapping("/getById/{id}")
+    @Transactional
     public ResponseEntity<BookDTO> getById(@PathVariable int id) {
         Optional<Book> bookOptional = bookService.getBookById(id);
 
@@ -48,6 +52,7 @@ public class BookController {
         }
     }
     @GetMapping("/getAll")
+    @Transactional
     public ResponseEntity<List<BookDTO>> getAllBooks(){
         List<Book> books = bookService.getAllBooks();
         List<BookDTO> bookDTOs = books.stream()
@@ -57,12 +62,14 @@ public class BookController {
     }
 
     @DeleteMapping("deleteById/{id}")
+    @Transactional
     public ResponseEntity<String> deleteById(@PathVariable int id){
         bookService.deleteById(id);
         return ResponseEntity.ok("Book deleted");
     }
 
     @PutMapping("updateById/{id}")
+    @Transactional
     public ResponseEntity<Book> updateById(@PathVariable int id, @RequestBody Book updatedBook)
     {
         Optional<Book> existingBookOptional = bookService.getBookById(id);

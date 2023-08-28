@@ -1,6 +1,7 @@
 package com.bryan.libarterbe.controller;
 
 import com.bryan.libarterbe.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
