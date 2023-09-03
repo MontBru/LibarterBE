@@ -2,7 +2,6 @@ package com.bryan.libarterbe.controller;
 
 import com.bryan.libarterbe.DTO.BookDTO;
 import com.bryan.libarterbe.DTO.UserDTO;
-import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

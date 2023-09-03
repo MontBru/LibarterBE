@@ -5,6 +5,7 @@ import com.bryan.libarterbe.DTO.LoginResponseDTO;
 import com.bryan.libarterbe.DTO.RegistrationDTO;
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO loginUser(@RequestBody LoginDTO body){
+    public LoginResponseDTO loginUser(@RequestBody LoginDTO body, HttpServletResponse response){
         try {
-            return authenticationService.loginUser(body.getUsername(), body.getPassword());
+            return authenticationService.loginUser(body.getUsername(), body.getPassword(), response);
         }catch (Exception e)
         {
             throw e;

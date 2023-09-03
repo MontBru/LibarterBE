@@ -5,6 +5,8 @@ import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Role;
 import com.bryan.libarterbe.repository.RoleRepository;
 import com.bryan.libarterbe.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,7 +51,19 @@ public class AuthenticationService {
         return userRepository.save(new ApplicationUser(0, encodedPassword, username, email, authorities));
     }
 
-    public LoginResponseDTO loginUser(String username, String password){
+    private void setLoginCookie(HttpServletResponse response, String token)
+    {
+        Cookie jwtCookie = new Cookie("jwt", token);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(true); // Requires HTTPS
+        jwtCookie.setPath("/"); // Set the path appropriately
+        jwtCookie.setMaxAge(10000);
+        response.addCookie(jwtCookie);
+
+
+    }
+
+    public LoginResponseDTO loginUser(String username, String password, HttpServletResponse response){
 
         try{
             Authentication auth = authenticationManager.authenticate(
@@ -57,6 +71,8 @@ public class AuthenticationService {
             );
 
             String token = tokenService.generateJwt(auth);
+
+            setLoginCookie(response, token);
 
             return new LoginResponseDTO(userRepository.findByUsername(username).get().getId(), token);
 

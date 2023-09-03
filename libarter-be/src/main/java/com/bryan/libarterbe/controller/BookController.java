@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/user/book")
-@CrossOrigin
+@CrossOrigin("*")
 public class BookController {
     @Autowired
     private BookService bookService;
