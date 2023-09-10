@@ -53,10 +53,11 @@ public class SecurityConfiguration {
 //                        channel.anyRequest().requiresSecure())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->{
-                    auth.requestMatchers("/auth/**").permitAll();
-                    auth.requestMatchers("/admin/**").hasRole("ADMIN");
-                    auth.requestMatchers("/user/**").hasAnyRole("ADMIN","USER");
-                    auth.anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
+//                    auth.requestMatchers("/auth/**").permitAll();
+//                    auth.requestMatchers("/admin/**").hasRole("ADMIN");
+//                    auth.requestMatchers("/user/**").hasAnyRole("ADMIN","USER");
+//                    auth.anyRequest().authenticated();
                 })
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

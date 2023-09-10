@@ -6,10 +6,13 @@ public class RegistrationDTO {
     private String email;
     private String password;
 
-    public RegistrationDTO(String username, String email, String password) {
+    private String phoneNumber;
+
+    public RegistrationDTO(String username, String email, String password, String phoneNumber) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getUsername() {
@@ -34,6 +37,14 @@ public class RegistrationDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override

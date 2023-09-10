@@ -1,6 +1,7 @@
 package com.bryan.libarterbe.controller;
 
 import com.bryan.libarterbe.DTO.BookDTO;
+import com.bryan.libarterbe.DTO.SearchBooksDTO;
 import com.bryan.libarterbe.DTO.UserDTO;
 import com.bryan.libarterbe.service.UserService;
 import jakarta.transaction.Transactional;
@@ -38,7 +39,6 @@ public class UserController {
     public ResponseEntity<List<BookDTO>> getAllBooksByUID(@PathVariable int id)
     {
         try {
-            System.out.println(id);
             return ResponseEntity.ok(BookDTO.booklistToBookDTOlist(userService.getUserById(id).getBooks()));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

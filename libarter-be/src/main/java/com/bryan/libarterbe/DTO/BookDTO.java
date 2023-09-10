@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BookDTO {
+    private int id;
     private String name;
     private String author;
     private String description;
@@ -15,7 +16,7 @@ public class BookDTO {
 
     public static BookDTO bookToBookDTO(Book book)
     {
-        return new BookDTO(book.getName(),book.getAuthor(),book.getDescription(), book.getUser().getId());
+        return new BookDTO(book.getId(), book.getName(),book.getAuthor(),book.getDescription(), book.getUser().getId());
     }
 
     public static List<BookDTO> booklistToBookDTOlist(List<Book> books)
@@ -25,7 +26,8 @@ public class BookDTO {
             .collect(Collectors.toList());
     }
 
-    public BookDTO(String name, String author, String description, int userId) {
+    public BookDTO(int id,String name, String author, String description, int userId) {
+        this.id = id;
         this.name = name;
         this.author = author;
         this.description = description;
@@ -62,5 +64,13 @@ public class BookDTO {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

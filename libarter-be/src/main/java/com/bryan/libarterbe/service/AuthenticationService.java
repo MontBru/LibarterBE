@@ -38,7 +38,7 @@ public class AuthenticationService {
     @Autowired
     private TokenService tokenService;
 
-    public ApplicationUser registerUser(String username, String password, String email){
+    public ApplicationUser registerUser(String username, String password, String email, String phoneNumber){
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
 
@@ -48,7 +48,7 @@ public class AuthenticationService {
 
         authorities.add(userRole);
 
-        return userRepository.save(new ApplicationUser(0, encodedPassword, username, email, authorities));
+        return userRepository.save(new ApplicationUser(0, encodedPassword, username, email, phoneNumber, authorities));
     }
 
     private void setLoginCookie(HttpServletResponse response, String token)

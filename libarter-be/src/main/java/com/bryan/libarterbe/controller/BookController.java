@@ -1,13 +1,16 @@
 package com.bryan.libarterbe.controller;
 
 import com.bryan.libarterbe.DTO.BookDTO;
+import com.bryan.libarterbe.DTO.SearchBooksDTO;
 import com.bryan.libarterbe.model.Book;
+import com.bryan.libarterbe.service.BookService;
 import com.bryan.libarterbe.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.bryan.libarterbe.service.BookService;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +68,7 @@ public class BookController {
 
     @PutMapping("updateById/{id}")
     @Transactional
-    public ResponseEntity<Book> updateById(@PathVariable int id, @RequestBody Book updatedBook)
+    public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody Book updatedBook)
     {
         Optional<Book> existingBookOptional = bookService.getBookById(id);
 
@@ -77,9 +80,17 @@ public class BookController {
 
             Book savedBook = bookService.saveBook(existingBook);
 
-            return ResponseEntity.ok(savedBook);
+            return ResponseEntity.ok(BookDTO.bookToBookDTO(savedBook));
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/getBooksBySearch")
+    @Transactional
+    public ResponseEntity<List<BookDTO>> getBooksBySearch(@RequestBody SearchBooksDTO body)
+    {
+        Pageable pageable = PageRequest.of(body.getPageNum(), 20);
+        return ResponseEntity.ok(BookDTO.booklistToBookDTOlist(bookService.getBooksBySearch(body.getSearchTerm(), pageable)));
     }
 }

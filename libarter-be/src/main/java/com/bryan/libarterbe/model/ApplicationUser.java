@@ -22,6 +22,8 @@ public class ApplicationUser implements UserDetails {
     @Column(unique = true)
     private String username;
 
+    private String phoneNumber;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Book> books = new ArrayList<Book>();
 
@@ -38,12 +40,13 @@ public class ApplicationUser implements UserDetails {
         this.authorities = new HashSet<>();
     }
 
-    public ApplicationUser(Integer id, String password, String username, String email, Set<Role> authorities) {
+    public ApplicationUser(Integer id, String password, String email, String username, String phoneNumber, Set<Role> authorities) {
         this.id = id;
         this.password = password;
-        this.username = username;
-        this.authorities = authorities;
         this.email = email;
+        this.username = username;
+        this.phoneNumber = phoneNumber;
+        this.authorities = authorities;
     }
 
     public Integer getId() {
@@ -94,6 +97,14 @@ public class ApplicationUser implements UserDetails {
 
     public void setBooks(List<Book> books) {
         this.books = books;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override

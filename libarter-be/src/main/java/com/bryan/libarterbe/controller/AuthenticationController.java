@@ -8,7 +8,11 @@ import com.bryan.libarterbe.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/auth")
@@ -18,9 +22,20 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
 
+    private boolean isPhoneNumberValid(String phoneNumber)
+    {
+        String regexPattern = "^(\\+359|0)\\d{9}$";
+        Pattern pattern = Pattern.compile(regexPattern);
+        Matcher matcher = pattern.matcher(phoneNumber);
+        return matcher.matches();
+    }
+
     @PostMapping("/register")
-    public ApplicationUser registerUser(@RequestBody RegistrationDTO body){
-        return authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail());
+    public ResponseEntity<ApplicationUser> registerUser(@RequestBody RegistrationDTO body){
+        if(isPhoneNumberValid( body.getPhoneNumber() ))
+            return ResponseEntity.ok(authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber()));
+        else
+            return ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/login")
