@@ -2,6 +2,7 @@ package com.bryan.libarterbe.service;
 
 import com.bryan.libarterbe.model.Book;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import com.bryan.libarterbe.repository.BookRepository;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public List<Book> getBooksBySearch(String searchTerm, Pageable pageable)
+    public Page<Book> getBooksBySearch(String searchTerm, Pageable pageable)
     {
         return bookRepository.findBookByNameContainingOrDescriptionContaining(searchTerm, searchTerm, pageable);
     }
