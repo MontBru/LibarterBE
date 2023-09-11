@@ -31,7 +31,7 @@ public class BookController {
     @Transactional
     public ResponseEntity<BookDTO> add(@RequestBody BookDTO bookDTO){
         try {
-            Book book = new Book(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getDescription(), userService.getUserById(bookDTO.getUserId()));
+            Book book = new Book(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getDescription(), bookDTO.getPrice(), userService.getUserById(bookDTO.getUserId()));
             bookService.saveBook(book);
             return ResponseEntity.ok(bookDTO);
         }catch(Exception e)

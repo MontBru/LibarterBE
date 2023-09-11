@@ -12,11 +12,12 @@ public class BookDTO {
     private String author;
     private String description;
 
+    private double price;
     private int userId;
 
     public static BookDTO bookToBookDTO(Book book)
     {
-        return new BookDTO(book.getId(), book.getName(),book.getAuthor(),book.getDescription(), book.getUser().getId());
+        return new BookDTO(book.getId(), book.getName(),book.getAuthor(),book.getDescription(), book.getPrice(), book.getUser().getId());
     }
 
     public static List<BookDTO> booklistToBookDTOlist(List<Book> books)
@@ -26,12 +27,21 @@ public class BookDTO {
             .collect(Collectors.toList());
     }
 
-    public BookDTO(int id,String name, String author, String description, int userId) {
+    public BookDTO(int id,String name, String author, String description, double price, int userId) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.description = description;
+        this.price = price;
         this.userId = userId;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public String getName() {

@@ -15,19 +15,29 @@ public class Book {
     private String author;
     private String description;
 
+    private double price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     private ApplicationUser user;
 
-    public Book(String name, String author, String description, ApplicationUser user) {
+    public Book(String name, String author, String description, double price, ApplicationUser user) {
         this.name = name;
         this.author = author;
         this.description = description;
+        this.price = price;
         this.user = user;
     }
 
     public Book() {
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public ApplicationUser getUser() {
