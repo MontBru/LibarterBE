@@ -39,9 +39,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO loginUser(@RequestBody LoginDTO body, HttpServletResponse response){
+    public LoginResponseDTO loginUser(@RequestBody LoginDTO body){
         try {
-            return authenticationService.loginUser(body.getUsername(), body.getPassword(), response);
+            return authenticationService.loginUser(body.getUsername(), body.getPassword());
         }catch (Exception e)
         {
             throw e;

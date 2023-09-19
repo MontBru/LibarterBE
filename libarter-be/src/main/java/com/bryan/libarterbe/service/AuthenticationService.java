@@ -48,31 +48,16 @@ public class AuthenticationService {
 
         authorities.add(userRole);
 
-        return userRepository.save(new ApplicationUser(0, encodedPassword, username, email, phoneNumber, authorities));
+        return userRepository.save(new ApplicationUser(0, encodedPassword, email, username, phoneNumber, authorities));
     }
 
-    private void setLoginCookie(HttpServletResponse response, String token)
-    {
-        Cookie jwtCookie = new Cookie("jwt", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true); // Requires HTTPS
-        jwtCookie.setPath("/"); // Set the path appropriately
-        jwtCookie.setMaxAge(10000);
-        response.addCookie(jwtCookie);
-
-
-    }
-
-    public LoginResponseDTO loginUser(String username, String password, HttpServletResponse response){
+    public LoginResponseDTO loginUser(String username, String password){
 
         try{
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
-
             String token = tokenService.generateJwt(auth);
-
-            setLoginCookie(response, token);
 
             return new LoginResponseDTO(userRepository.findByUsername(username).get().getId(), token);
 
