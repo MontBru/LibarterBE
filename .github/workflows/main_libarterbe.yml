@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
 
       - name: Change directory to libarter-be
-        run: cd libarter-be
+        run: ls
 
       - name: See in which dir i am
         run: echo $(pwd)
