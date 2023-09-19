@@ -24,6 +24,9 @@ jobs:
       - name: Change directory to libarter-be
         run: cd libarter-be
 
+      - name: See in which dir i am
+        run: echo $(pwd)
+
       - name: Build with Maven
         run: mvn clean install
 
