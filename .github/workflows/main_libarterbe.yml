@@ -21,13 +21,10 @@ jobs:
         with:
           java-version: '17'
 
-      - name: Change directory to libarter-be
+      - name: Build with Maven
         run: |
           cd libarter-be
-          echo $(pwd)
-
-      - name: Build with Maven
-        run: mvn clean install
+          mvn clean install
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
