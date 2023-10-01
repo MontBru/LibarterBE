@@ -17,6 +17,19 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+<!--		<dependency>-->
+<!--			<groupId>com.azure.spring</groupId>-->
+<!--			<artifactId>spring-cloud-azure-dependencies</artifactId>-->
+<!--			<version>5.5.0</version>-->
+<!--			<type>pom</type>-->
+<!--			<scope>import</scope>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>com.azure.spring</groupId>-->
+<!--			<artifactId>spring-cloud-azure-starter</artifactId>-->
+<!--			<version>5.5.0</version>-->
+<!--		</dependency>-->
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,11 +32,23 @@ public class BookController {
     @Transactional
     public ResponseEntity<BookDTO> add(@RequestBody BookDTO bookDTO){
         try {
-            Book book = new Book(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getDescription(), bookDTO.getPrice(), userService.getUserById(bookDTO.getUserId()));
+            Book book = new Book(
+                    bookDTO.getName(),
+                    bookDTO.getAuthor(),
+                    bookDTO.getDescription(),
+                    bookDTO.getPrice(),
+                    userService.getUserById(bookDTO.getUserId()),
+                    //bookDTO.getPhotos(),
+                    new LinkedList<>(),
+                    bookDTO.isAcceptsTrade(),
+                    bookDTO.isNew(),
+                    bookDTO.getIsbn(),
+                    bookDTO.getTags());
             bookService.saveBook(book);
             return ResponseEntity.ok(bookDTO);
         }catch(Exception e)
         {
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }
@@ -70,7 +83,7 @@ public class BookController {
 
     @PutMapping("updateById/{id}")
     @Transactional
-    public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody Book updatedBook)
+    public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody BookDTO updatedBook)
     {
         Optional<Book> existingBookOptional = bookService.getBookById(id);
 
@@ -80,6 +93,19 @@ public class BookController {
             existingBook.setAuthor(updatedBook.getAuthor());
             existingBook.setDescription(updatedBook.getDescription());
             existingBook.setPrice(updatedBook.getPrice());
+            try {
+                existingBook.setPhotos(updatedBook.getPhotos());
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
+            }
+            existingBook.setAcceptsTrade(updatedBook.isAcceptsTrade());
+            existingBook.setNew(updatedBook.isNew());
+            existingBook.setIsbn(updatedBook.getIsbn());
+            try {
+                existingBook.setTags(updatedBook.getTags());
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
+            }
 
             Book savedBook = bookService.saveBook(existingBook);
 

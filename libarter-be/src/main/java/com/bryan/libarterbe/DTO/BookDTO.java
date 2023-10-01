@@ -12,12 +12,31 @@ public class BookDTO {
     private String author;
     private String description;
 
+    private List<String> photos;
+
+    private boolean acceptsTrade;
+
+    private boolean isNew;
     private double price;
     private int userId;
 
-    public static BookDTO bookToBookDTO(Book book)
-    {
-        return new BookDTO(book.getId(), book.getName(),book.getAuthor(),book.getDescription(), book.getPrice(), book.getUser().getId());
+    private long isbn;
+
+    private List<String> tags;
+
+    public static BookDTO bookToBookDTO(Book book) {
+        return new BookDTO(
+                book.getId(),
+                book.getName(),
+                book.getAuthor(),
+                book.getDescription(),
+                book.getPrice(),
+                book.getUser().getId(),
+                book.getPhotos(),
+                book.isAcceptsTrade(),
+                book.isNew(),
+                book.getIsbn(),
+                book.getTags());
     }
 
     public static List<BookDTO> booklistToBookDTOlist(List<Book> books)
@@ -27,13 +46,69 @@ public class BookDTO {
             .collect(Collectors.toList());
     }
 
-    public BookDTO(int id,String name, String author, String description, double price, int userId) {
+    public BookDTO(
+            int id,String name,
+            String author,
+            String description,
+            double price,
+            int userId,
+            List<String> photos,
+            boolean acceptsTrade,
+            boolean isNew,
+            long isbn,
+            List<String> tags
+    ) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.description = description;
         this.price = price;
         this.userId = userId;
+        this.photos = photos;
+        this.acceptsTrade = acceptsTrade;
+        this.isNew = isNew;
+        this.tags = tags;
+        this.isbn = isbn;
+    }
+
+    public long getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(long isbn) {
+        this.isbn = isbn;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public List<String> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<String> photos) {
+        this.photos = photos;
+    }
+
+    public boolean isAcceptsTrade() {
+        return acceptsTrade;
+    }
+
+    public void setAcceptsTrade(boolean acceptsTrade) {
+        this.acceptsTrade = acceptsTrade;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
     }
 
     public double getPrice() {

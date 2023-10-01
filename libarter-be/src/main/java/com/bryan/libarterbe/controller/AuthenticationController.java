@@ -31,9 +31,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApplicationUser> registerUser(@RequestBody RegistrationDTO body){
-        if(isPhoneNumberValid( body.getPhoneNumber() ))
-            return ResponseEntity.ok(authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber()));
+    public ResponseEntity<LoginResponseDTO> registerUser(@RequestBody RegistrationDTO body){
+        if(isPhoneNumberValid( body.getPhoneNumber() )) {
+            authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber());
+            return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
+        }
         else
             return ResponseEntity.badRequest().build();
     }
