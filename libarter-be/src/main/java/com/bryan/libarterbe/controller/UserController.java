@@ -44,4 +44,15 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/getUser/{id}")
+    @Transactional
+    public ResponseEntity<UserDTO> getUserByUID(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(UserDTO.UserToUserDTO(userService.getUserById(id)));
+        } catch (Exception e)
+        {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
