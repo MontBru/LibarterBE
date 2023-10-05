@@ -27,11 +27,47 @@ public class Book {
 
     private long isbn;
 
-    private List<String> tags;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="book_tag_junction",
+            joinColumns = {@JoinColumn(name="book_id")},
+            inverseJoinColumns = {@JoinColumn(name="tag_id")}
+    )
+    private List<Tag> tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     private ApplicationUser user;
+
+    public Book(
+            int id,
+            String name,
+            String author,
+            String description,
+            double price,
+            ApplicationUser user,
+            List<String> photos,
+            boolean acceptsTrade,
+            boolean isNew,
+            long isbn,
+            List<Tag> tags
+    ) throws Exception {
+        if(photos.size()>5)
+            throw new Exception("can't add this many photos");
+        if(tags.size()>10)
+            throw new Exception("can't add this many tags");
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.description = description;
+        this.price = price;
+        this.user = user;
+        this.photos = photos;
+        this.acceptsTrade = acceptsTrade;
+        this.isNew = isNew;
+        this.tags = tags;
+        this.isbn = isbn;
+    }
 
     public Book(
             String name,
@@ -43,7 +79,7 @@ public class Book {
             boolean acceptsTrade,
             boolean isNew,
             long isbn,
-            List<String> tags
+            List<Tag> tags
     ) throws Exception {
         if(photos.size()>5)
             throw new Exception("can't add this many photos");
@@ -69,11 +105,11 @@ public class Book {
         this.isbn = isbn;
     }
 
-    public List<String> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) throws Exception {
+    public void setTags(List<Tag> tags) throws Exception {
         if(tags.size()>10)
             throw new Exception();
         this.tags = tags;

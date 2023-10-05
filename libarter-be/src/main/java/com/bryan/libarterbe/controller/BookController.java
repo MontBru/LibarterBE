@@ -32,19 +32,7 @@ public class BookController {
     @Transactional
     public ResponseEntity<BookDTO> add(@RequestBody BookDTO bookDTO){
         try {
-            Book book = new Book(
-                    bookDTO.getName(),
-                    bookDTO.getAuthor(),
-                    bookDTO.getDescription(),
-                    bookDTO.getPrice(),
-                    userService.getUserById(bookDTO.getUserId()),
-                    //bookDTO.getPhotos(),
-                    new LinkedList<>(),
-                    bookDTO.isAcceptsTrade(),
-                    bookDTO.isNew(),
-                    bookDTO.getIsbn(),
-                    bookDTO.getTags());
-            bookService.saveBook(book);
+            bookService.addBook(bookDTO);
             return ResponseEntity.ok(bookDTO);
         }catch(Exception e)
         {
@@ -85,32 +73,10 @@ public class BookController {
     @Transactional
     public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody BookDTO updatedBook)
     {
-        Optional<Book> existingBookOptional = bookService.getBookById(id);
-
-        if (existingBookOptional.isPresent()) {
-            Book existingBook = existingBookOptional.get();
-            existingBook.setName(updatedBook.getName());
-            existingBook.setAuthor(updatedBook.getAuthor());
-            existingBook.setDescription(updatedBook.getDescription());
-            existingBook.setPrice(updatedBook.getPrice());
-            try {
-                existingBook.setPhotos(updatedBook.getPhotos());
-            } catch (Exception e) {
-                return ResponseEntity.internalServerError().build();
-            }
-            existingBook.setAcceptsTrade(updatedBook.isAcceptsTrade());
-            existingBook.setNew(updatedBook.isNew());
-            existingBook.setIsbn(updatedBook.getIsbn());
-            try {
-                existingBook.setTags(updatedBook.getTags());
-            } catch (Exception e) {
-                return ResponseEntity.internalServerError().build();
-            }
-
-            Book savedBook = bookService.saveBook(existingBook);
-
+        try {
+            Book savedBook=bookService.updateBook(updatedBook, id);
             return ResponseEntity.ok(BookDTO.bookToBookDTO(savedBook));
-        } else {
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -125,6 +91,30 @@ public class BookController {
 
         List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
 
+
+        return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
+    }
+
+    @PostMapping("/getBooksByAuthorSearch")
+    @Transactional
+    public ResponseEntity<BookPageDTO> getBooksByAuthorSearch(@RequestBody SearchBooksDTO body)
+    {
+        Pageable pageable = PageRequest.of(body.getPageNum(), 20);
+        Page<Book> bookPage = bookService.getBookByAuthorSearch(body.getSearchTerm(), pageable);
+        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
+
+        return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
+    }
+
+    @PostMapping("/getBooksByTagSearch")
+    @Transactional
+    public ResponseEntity<BookPageDTO> getBooksByTagSearch(@RequestBody SearchBooksDTO body)
+    {
+        Pageable pageable = PageRequest.of(body.getPageNum(), 20);
+        //have to change
+        Page<Book> bookPage = bookService.getBookByTagSearch(body.getSearchTerm(), pageable);
+        //have to change
+        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
 
         return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
     }

@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
     }
 
     public ApplicationUser getUserById(int id) throws Exception {
-        return userRepository.findById(id).orElseThrow(() -> new Exception("couldn't find user with this username"));
+        return userRepository.findById(id).orElseThrow(() -> new Exception("couldn't find user with this id"));
     }
     public List<ApplicationUser> getAllUsers()
     {

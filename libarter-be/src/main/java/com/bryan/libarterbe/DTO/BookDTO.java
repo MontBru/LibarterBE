@@ -2,6 +2,7 @@ package com.bryan.libarterbe.DTO;
 
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Book;
+import com.bryan.libarterbe.model.Tag;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class BookDTO {
                 book.isAcceptsTrade(),
                 book.isNew(),
                 book.getIsbn(),
-                book.getTags());
+                book.getTags().stream().map((Tag tag) ->{ return tag.getText();}).collect(Collectors.toList()));
     }
 
     public static List<BookDTO> booklistToBookDTOlist(List<Book> books)
