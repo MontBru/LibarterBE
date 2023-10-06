@@ -12,6 +12,7 @@ import com.bryan.libarterbe.repository.BookRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StreamUtils;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -63,14 +64,14 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public Page<Book> getBooksBySearch(String searchTerm, Pageable pageable)
+    public Page<Book> getBooksBySearch(String searchTerm, double max, double min, Pageable pageable)
     {
-        return bookRepository.findBookByNameContainingOrDescriptionContainingIgnoreCase(searchTerm, searchTerm, pageable);
+        return bookRepository.findBooksByNameContainingOrDescriptionContainingIgnoreCaseAndPriceBetween(searchTerm, searchTerm, min, max,pageable);
     }
 
-    public Page<Book> getBookByAuthorSearch(String searchTerm, Pageable pageable)
+    public Page<Book> getBookByAuthorSearch(String searchTerm, double max, double min, Pageable pageable)
     {
-        return bookRepository.findBookByAuthorContainingIgnoreCase(searchTerm, pageable);
+        return bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetween(searchTerm, min, max,pageable);
     }
 
     private List<Tag> stringsToTags(List<String> tagStrings)
@@ -141,8 +142,8 @@ public class BookService {
         }
     }
 
-    public Page<Book> getBookByTagSearch(String searchTerm, Pageable pageable)
+    public Page<Book> getBookByTagSearch(String searchTerm, double max, double min, Pageable pageable)
     {
-        return bookRepository.findBooksByTagsTextContainingIgnoreCase(searchTerm, pageable);
+        return bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetween(searchTerm, min, max, pageable);
     }
 }

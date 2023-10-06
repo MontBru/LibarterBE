@@ -12,8 +12,8 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Integer> {
-    Page<Book> findBookByNameContainingOrDescriptionContainingIgnoreCase(String searchTerm, String searchTermDescription, Pageable pageable);
+    Page<Book> findBooksByNameContainingOrDescriptionContainingIgnoreCaseAndPriceBetween(String searchTerm, String searchTermDescription, double minPrice, double maxPrice, Pageable pageable);
 
-    Page<Book> findBooksByTagsTextContainingIgnoreCase(String searchTerm, Pageable pageable);
-    Page<Book> findBookByAuthorContainingIgnoreCase(String searchTerm, Pageable pageable);
+    Page<Book> findBooksByTagsTextContainingIgnoreCaseAndPriceBetween(String searchTerm, double minPrice, double maxPrice, Pageable pageable);
+    Page<Book> findBooksByAuthorContainingIgnoreCaseAndPriceBetween(String searchTerm, double minPrice, double maxPrice, Pageable pageable);
 }

@@ -5,9 +5,15 @@ public class SearchBooksDTO {
 
     int pageNum;
 
-    public SearchBooksDTO(String searchTerm, int pageNum) {
+    double minPrice;
+
+    double maxPrice;
+
+    public SearchBooksDTO(String searchTerm, int pageNum, double minPrice, double maxPrice) {
         this.searchTerm = searchTerm;
         this.pageNum = pageNum;
+        this.minPrice = minPrice;
+        this.maxPrice = maxPrice;
     }
 
     public String getSearchTerm() {
@@ -24,5 +30,21 @@ public class SearchBooksDTO {
 
     public void setPageNum(int pageNum) {
         this.pageNum = pageNum;
+    }
+
+    public double getMinPrice() {
+        return minPrice;
+    }
+
+    public void setMinPrice(double minPrice) {
+        this.minPrice = minPrice;
+    }
+
+    public double getMaxPrice() {
+        return maxPrice;
+    }
+
+    public void setMaxPrice(double maxPrice) {
+        this.maxPrice = maxPrice;
     }
 }

@@ -81,41 +81,40 @@ public class BookController {
         }
     }
 
-    @PostMapping("/getBooksBySearch")
-    @Transactional
-    public ResponseEntity<BookPageDTO> getBooksBySearch(@RequestBody SearchBooksDTO body)
+    private ResponseEntity<BookPageDTO> searchBooks(SearchBooksDTO body, int searchType)
     {
         Pageable pageable = PageRequest.of(body.getPageNum(), 20);
-
-        Page<Book> bookPage = bookService.getBooksBySearch(body.getSearchTerm(), pageable);
-
+        Page<Book> bookPage;
+        if(searchType==1)
+            bookPage = bookService.getBooksBySearch(body.getSearchTerm(), body.getMaxPrice(), body.getMinPrice(), pageable);
+        else if(searchType == 2)
+            bookPage = bookService.getBookByAuthorSearch(body.getSearchTerm(), body.getMaxPrice(), body.getMinPrice(), pageable);
+        else
+            bookPage = bookService.getBookByTagSearch(body.getSearchTerm(), body.getMaxPrice(), body.getMinPrice(), pageable);
         List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
 
 
         return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
+    }
+
+    @PostMapping("/getBooksBySearch")
+    @Transactional
+    public ResponseEntity<BookPageDTO> getBooksBySearch(@RequestBody SearchBooksDTO body)
+    {
+        return searchBooks(body, 1);
     }
 
     @PostMapping("/getBooksByAuthorSearch")
     @Transactional
     public ResponseEntity<BookPageDTO> getBooksByAuthorSearch(@RequestBody SearchBooksDTO body)
     {
-        Pageable pageable = PageRequest.of(body.getPageNum(), 20);
-        Page<Book> bookPage = bookService.getBookByAuthorSearch(body.getSearchTerm(), pageable);
-        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
-
-        return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
+        return searchBooks(body, 2);
     }
 
     @PostMapping("/getBooksByTagSearch")
     @Transactional
     public ResponseEntity<BookPageDTO> getBooksByTagSearch(@RequestBody SearchBooksDTO body)
     {
-        Pageable pageable = PageRequest.of(body.getPageNum(), 20);
-        //have to change
-        Page<Book> bookPage = bookService.getBookByTagSearch(body.getSearchTerm(), pageable);
-        //have to change
-        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
-
-        return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
+        return searchBooks(body, 3);
     }
 }
