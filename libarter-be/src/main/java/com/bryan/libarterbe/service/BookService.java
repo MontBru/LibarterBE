@@ -66,7 +66,7 @@ public class BookService {
 
     public Page<Book> getBooksBySearch(String searchTerm, double max, double min, Pageable pageable)
     {
-        return bookRepository.findBooksByNameContainingOrDescriptionContainingIgnoreCaseAndPriceBetween(searchTerm, searchTerm, min, max,pageable);
+        return bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenOrDescriptionContainingIgnoreCaseAndPriceBetween(searchTerm, min, max,searchTerm, min, max,pageable);
     }
 
     public Page<Book> getBookByAuthorSearch(String searchTerm, double max, double min, Pageable pageable)
