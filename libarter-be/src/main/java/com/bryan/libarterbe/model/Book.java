@@ -27,6 +27,11 @@ public class Book {
 
     private long isbn;
 
+    private String publisher;
+
+    private String language;
+    private int yearPublished;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="book_tag_junction",
@@ -50,7 +55,10 @@ public class Book {
             boolean acceptsTrade,
             boolean isNew,
             long isbn,
-            List<Tag> tags
+            List<Tag> tags,
+            String publisher,
+            String language,
+            int yearPublished
     ) throws Exception {
         if(photos.size()>5)
             throw new Exception("can't add this many photos");
@@ -59,7 +67,7 @@ public class Book {
         this.id = id;
         this.name = name;
         this.author = author;
-        this.description = description;
+        this.description = description.substring(0,99);
         this.price = price;
         this.user = user;
         this.photos = photos;
@@ -67,6 +75,9 @@ public class Book {
         this.isNew = isNew;
         this.tags = tags;
         this.isbn = isbn;
+        this.publisher = publisher;
+        this.language = language;
+        this.yearPublished = yearPublished;
     }
 
     public Book(
@@ -79,7 +90,10 @@ public class Book {
             boolean acceptsTrade,
             boolean isNew,
             long isbn,
-            List<Tag> tags
+            List<Tag> tags,
+            String publisher,
+            String language,
+            int yearPublished
     ) throws Exception {
         if(photos.size()>5)
             throw new Exception("can't add this many photos");
@@ -87,7 +101,7 @@ public class Book {
             throw new Exception("can't add this many tags");
         this.name = name;
         this.author = author;
-        this.description = description;
+        this.description = description.substring(0,99);
         this.price = price;
         this.user = user;
         this.photos = photos;
@@ -95,6 +109,9 @@ public class Book {
         this.isNew = isNew;
         this.tags = tags;
         this.isbn = isbn;
+        this.publisher = publisher;
+        this.language = language;
+        this.yearPublished = yearPublished;
     }
 
     public long getIsbn() {
@@ -189,6 +206,30 @@ public class Book {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.substring(0,99);
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public int getYearPublished() {
+        return yearPublished;
+    }
+
+    public void setYearPublished(int yearPublished) {
+        this.yearPublished = yearPublished;
     }
 }

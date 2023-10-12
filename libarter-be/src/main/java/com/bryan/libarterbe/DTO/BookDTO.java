@@ -20,10 +20,14 @@ public class BookDTO {
     private boolean isNew;
     private double price;
     private int userId;
-
     private long isbn;
 
     private List<String> tags;
+
+    private String publisher;
+
+    private String language;
+    private int yearPublished;
 
     public static BookDTO bookToBookDTO(Book book) {
         return new BookDTO(
@@ -37,7 +41,11 @@ public class BookDTO {
                 book.isAcceptsTrade(),
                 book.isNew(),
                 book.getIsbn(),
-                book.getTags().stream().map((Tag tag) ->{ return tag.getText();}).collect(Collectors.toList()));
+                book.getTags().stream().map((Tag tag) ->{ return tag.getText();}).collect(Collectors.toList()),
+                book.getPublisher(),
+                book.getLanguage(),
+                book.getYearPublished()
+                );
     }
 
     public static List<BookDTO> booklistToBookDTOlist(List<Book> books)
@@ -48,7 +56,8 @@ public class BookDTO {
     }
 
     public BookDTO(
-            int id,String name,
+            int id,
+            String name,
             String author,
             String description,
             double price,
@@ -57,7 +66,10 @@ public class BookDTO {
             boolean acceptsTrade,
             boolean isNew,
             long isbn,
-            List<String> tags
+            List<String> tags,
+            String publisher,
+            String language,
+            int yearPublished
     ) {
         this.id = id;
         this.name = name;
@@ -70,6 +82,9 @@ public class BookDTO {
         this.isNew = isNew;
         this.tags = tags;
         this.isbn = isbn;
+        this.publisher = publisher;
+        this.language = language;
+        this.yearPublished = yearPublished;
     }
 
     public long getIsbn() {
@@ -158,5 +173,29 @@ public class BookDTO {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public int getYearPublished() {
+        return yearPublished;
+    }
+
+    public void setYearPublished(int yearPublished) {
+        this.yearPublished = yearPublished;
     }
 }
