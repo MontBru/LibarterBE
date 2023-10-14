@@ -183,14 +183,13 @@ public class BookService {
 
                 Matcher matcherRemoveISBN = patternRemoveISBN.matcher(jsonResponse);
                 if (matcherRemoveISBN.find()) {
-                    System.out.println("found");
                     jsonResponse = matcherRemoveISBN.group(1);
                 }
 
                 Gson gson = new Gson();
                 BookAPIResponseDTO bookAPIInfo = gson.fromJson(jsonResponse, BookAPIResponseDTO.class);
 
-                Pattern patternGetYear = Pattern.compile("^.*\\D(\\d+)$");
+                Pattern patternGetYear = Pattern.compile("(\\d{4})");
                 Matcher matcherGetYear = patternGetYear.matcher(bookAPIInfo.getPublish_date());
 
                 String yearPublished = "0";
