@@ -3,6 +3,7 @@ package com.bryan.libarterbe.controller;
 import com.bryan.libarterbe.DTO.BookDTO;
 import com.bryan.libarterbe.DTO.SearchBooksDTO;
 import com.bryan.libarterbe.DTO.UserDTO;
+import com.bryan.libarterbe.model.Book;
 import com.bryan.libarterbe.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,17 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/getAllBooksByUID/{id}")
+    @GetMapping("/getAllBooksByUID/{id}/{isRequest}")
     @Transactional
-    public ResponseEntity<List<BookDTO>> getAllBooksByUID(@PathVariable int id)
+    public ResponseEntity<List<BookDTO>> getAllBooksByUID(@PathVariable int id, @PathVariable boolean isRequest)
     {
         try {
-            return ResponseEntity.ok(BookDTO.booklistToBookDTOlist(userService.getUserById(id).getBooks()));
+            List<Book> books = userService.getUserById(id).getBooks();
+            books = books
+                    .stream()
+                    .filter((Book b)->b.getIsRequest()==isRequest)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(BookDTO.booklistToBookDTOlist(books));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

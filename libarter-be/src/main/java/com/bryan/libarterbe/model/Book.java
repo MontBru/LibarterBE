@@ -13,6 +13,8 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    private boolean isRequest;
     private String name;
     private String author;
     private String description;
@@ -46,6 +48,7 @@ public class Book {
 
     public Book(
             int id,
+            boolean isRequest,
             String name,
             String author,
             String description,
@@ -65,9 +68,13 @@ public class Book {
         if(tags.size()>10)
             throw new Exception("can't add this many tags");
         this.id = id;
+        this.isRequest = isRequest;
         this.name = name;
         this.author = author;
-        this.description = description.substring(0,99);
+        if(description.length()>100)
+            this.description = description.substring(0,99);
+        else
+            this.description = description;
         this.price = price;
         this.user = user;
         this.photos = photos;
@@ -81,6 +88,7 @@ public class Book {
     }
 
     public Book(
+            boolean isRequest,
             String name,
             String author,
             String description,
@@ -99,9 +107,13 @@ public class Book {
             throw new Exception("can't add this many photos");
         if(tags.size()>10)
             throw new Exception("can't add this many tags");
+        this.isRequest = isRequest;
         this.name = name;
         this.author = author;
-        this.description = description.substring(0,99);
+        if(description.length()>100)
+            this.description = description.substring(0,99);
+        else
+            this.description = description;
         this.price = price;
         this.user = user;
         this.photos = photos;
@@ -177,6 +189,14 @@ public class Book {
         this.user = userId;
     }
 
+    public boolean getIsRequest() {
+        return isRequest;
+    }
+
+    public void setIsRequest(boolean request) {
+        isRequest = request;
+    }
+
     public String getName() {
         return name;
     }
@@ -206,7 +226,10 @@ public class Book {
     }
 
     public void setDescription(String description) {
-        this.description = description.substring(0,99);
+        if(description.length()>100)
+            this.description = description.substring(0,99);
+        else
+            this.description = description;
     }
 
     public String getPublisher() {

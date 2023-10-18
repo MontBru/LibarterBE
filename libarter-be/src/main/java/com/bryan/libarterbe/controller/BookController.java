@@ -86,41 +86,25 @@ public class BookController {
         }
     }
 
-    private ResponseEntity<BookPageDTO> searchBooks(SearchBooksDTO body, int searchType)
-    {
-        Pageable pageable = PageRequest.of(body.getPageNum(), 20);
-        Page<Book> bookPage;
-        if(searchType==1)
-            bookPage = bookService.getBooksBySearch(body.getSearchTerm(), body.getMaxPrice(), body.getMinPrice(), pageable);
-        else if(searchType == 2)
-            bookPage = bookService.getBookByAuthorSearch(body.getSearchTerm(), body.getMaxPrice(), body.getMinPrice(), pageable);
-        else
-            bookPage = bookService.getBookByTagSearch(body.getSearchTerm(), body.getMaxPrice(), body.getMinPrice(), pageable);
-        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
-
-
-        return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
-    }
-
     @PostMapping("/getBooksBySearch")
     @Transactional
     public ResponseEntity<BookPageDTO> getBooksBySearch(@RequestBody SearchBooksDTO body)
     {
-        return searchBooks(body, 1);
+        return bookService.searchBooks(body, 1, body.isRequest());
     }
 
     @PostMapping("/getBooksByAuthorSearch")
     @Transactional
     public ResponseEntity<BookPageDTO> getBooksByAuthorSearch(@RequestBody SearchBooksDTO body)
     {
-        return searchBooks(body, 2);
+        return bookService.searchBooks(body, 2, body.isRequest());
     }
 
     @PostMapping("/getBooksByTagSearch")
     @Transactional
     public ResponseEntity<BookPageDTO> getBooksByTagSearch(@RequestBody SearchBooksDTO body)
     {
-        return searchBooks(body, 3);
+        return bookService.searchBooks(body, 3, body.isRequest());
     }
     @GetMapping("/getBookByISBN/{isbn}")
     public ResponseEntity<BookInfoDTO> getBookByISBN(@PathVariable long isbn)

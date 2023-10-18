@@ -1,6 +1,7 @@
 package com.bryan.libarterbe.DTO;
 
 public class SearchBooksDTO {
+    boolean isRequest;
     String searchTerm;
 
     int pageNum;
@@ -9,11 +10,21 @@ public class SearchBooksDTO {
 
     double maxPrice;
 
-    public SearchBooksDTO(String searchTerm, int pageNum, double minPrice, double maxPrice) {
+    public SearchBooksDTO(boolean isRequest,String searchTerm, int pageNum, double minPrice, double maxPrice) {
+        this.isRequest = isRequest;
         this.searchTerm = searchTerm;
         this.pageNum = pageNum;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
+    }
+
+
+    public boolean isRequest() {
+        return isRequest;
+    }
+
+    public void setRequest(boolean request) {
+        isRequest = request;
     }
 
     public String getSearchTerm() {

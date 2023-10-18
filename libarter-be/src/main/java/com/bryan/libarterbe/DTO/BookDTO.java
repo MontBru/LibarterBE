@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class BookDTO {
     private int id;
+
+    private boolean isRequest;
     private String name;
     private String author;
     private String description;
@@ -32,6 +34,7 @@ public class BookDTO {
     public static BookDTO bookToBookDTO(Book book) {
         return new BookDTO(
                 book.getId(),
+                book.getIsRequest(),
                 book.getName(),
                 book.getAuthor(),
                 book.getDescription(),
@@ -57,6 +60,7 @@ public class BookDTO {
 
     public BookDTO(
             int id,
+            boolean isRequest,
             String name,
             String author,
             String description,
@@ -72,6 +76,7 @@ public class BookDTO {
             int yearPublished
     ) {
         this.id = id;
+        this.isRequest = isRequest;
         this.name = name;
         this.author = author;
         this.description = description;
@@ -133,6 +138,14 @@ public class BookDTO {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public boolean getIsRequest() {
+        return isRequest;
+    }
+
+    public void setIsRequest(boolean request) {
+        isRequest = request;
     }
 
     public String getName() {

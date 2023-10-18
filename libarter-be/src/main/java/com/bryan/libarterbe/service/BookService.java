@@ -1,14 +1,13 @@
 package com.bryan.libarterbe.service;
 
-import com.bryan.libarterbe.DTO.BookAPIResponseDTO;
-import com.bryan.libarterbe.DTO.BookDTO;
-import com.bryan.libarterbe.DTO.BookInfoDTO;
+import com.bryan.libarterbe.DTO.*;
 import com.bryan.libarterbe.model.Book;
 import com.bryan.libarterbe.model.Tag;
 import com.bryan.libarterbe.repository.TagRepository;
 import com.nimbusds.jose.shaded.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.bryan.libarterbe.repository.BookRepository;
@@ -66,16 +65,35 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public Page<Book> getBooksBySearch(String searchTerm, double max, double min, Pageable pageable)
+    public ResponseEntity<BookPageDTO> searchBooks(SearchBooksDTO body, int searchType, boolean isRequest)
     {
-        return bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenOrDescriptionContainingIgnoreCaseAndPriceBetween(searchTerm, min, max,searchTerm, min, max,pageable);
-    }
+        Pageable pageable = PageRequest.of(body.getPageNum(), 20);
+        Page<Book> bookPage;
+        if(searchType==1) {
+            if (isRequest == false)
+                bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalseOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+            else
+                bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrueOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+        }
+        else if(searchType == 2)
+        {
+            if(isRequest == false)
+                bookPage = bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+            else
+                bookPage = bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+        }
+        else
+        {
+            if(isRequest == false)
+                bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+            else
+                bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+        }
+        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
 
-    public Page<Book> getBookByAuthorSearch(String searchTerm, double max, double min, Pageable pageable)
-    {
-        return bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetween(searchTerm, min, max,pageable);
-    }
 
+        return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
+    }
     private List<Tag> stringsToTags(List<String> tagStrings)
     {
         List<Tag> tags=new LinkedList<>();
@@ -97,6 +115,7 @@ public class BookService {
         List<Tag> tags=stringsToTags(bookDTO.getTags());
         try {
             Book book = new Book(
+                    bookDTO.getIsRequest(),
                     bookDTO.getName(),
                     bookDTO.getAuthor(),
                     bookDTO.getDescription(),
@@ -127,6 +146,7 @@ public class BookService {
             System.out.println(bookDTO.getUserId());
             Book existingBook = new Book(
                     id,
+                    bookDTO.getIsRequest(),
                     bookDTO.getName(),
                     bookDTO.getAuthor(),
                     bookDTO.getDescription(),
@@ -148,11 +168,6 @@ public class BookService {
         } else {
             throw new Exception();
         }
-    }
-
-    public Page<Book> getBookByTagSearch(String searchTerm, double max, double min, Pageable pageable)
-    {
-        return bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetween(searchTerm, min, max, pageable);
     }
 
     private static HttpURLConnection con;
