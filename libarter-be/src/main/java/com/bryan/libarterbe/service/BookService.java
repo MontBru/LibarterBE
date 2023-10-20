@@ -8,6 +8,7 @@ import com.nimbusds.jose.shaded.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.bryan.libarterbe.repository.BookRepository;
@@ -65,6 +66,22 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
+    public List<BookDTO> searchSuggestedBooks(BookDTO bookDTO)
+    {
+        Sort sort = Sort.by(Sort.Order.asc("price"));
+
+        Pageable pageable = PageRequest.of(0, 5, sort);
+
+        Page<Book> bookPage;
+        if(bookDTO.isNew())
+            bookPage = bookRepository.findBooksByNameContainingAndAuthorContainingAndLanguageContainingAndIsNewIsAndIsRequestIs(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getLanguage(), bookDTO.isNew(), bookDTO.getIsRequest(), pageable);
+        else
+            bookPage = bookRepository.findBooksByNameContainingAndAuthorContainingAndLanguageContainingAndIsRequestIs(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getLanguage(), bookDTO.getIsRequest(), pageable);
+
+        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
+
+        return bookDTOList;
+    }
     public ResponseEntity<BookPageDTO> searchBooks(SearchBooksDTO body, int searchType, boolean isRequest)
     {
         Pageable pageable = PageRequest.of(body.getPageNum(), 20);

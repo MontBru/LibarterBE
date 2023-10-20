@@ -115,4 +115,16 @@ public class BookController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("/getBookSuggestions")
+    public ResponseEntity<List<BookDTO>> getBookSuggestions(@RequestBody BookDTO bookDTO)
+    {
+        try{
+            return ResponseEntity.ok(bookService.searchSuggestedBooks(bookDTO));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
