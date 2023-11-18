@@ -1,14 +1,10 @@
-package com.bryan.libarterbe.controller;
+package com.bryan.libarterbe.controller.Authentication;
 
 import com.bryan.libarterbe.DTO.LoginDTO;
-import com.bryan.libarterbe.DTO.LoginResponseDTO;
 import com.bryan.libarterbe.DTO.RegistrationDTO;
-import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.service.AuthenticationService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.regex.Matcher;
@@ -16,7 +12,6 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin("*")
 public class AuthenticationController {
 
     @Autowired
@@ -31,7 +26,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDTO> registerUser(@RequestBody RegistrationDTO body){
+    public ResponseEntity<String> registerUser(@RequestBody RegistrationDTO body){
         if(isPhoneNumberValid( body.getPhoneNumber() )) {
             authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber());
             return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
@@ -41,12 +36,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO loginUser(@RequestBody LoginDTO body){
+    public ResponseEntity<String> loginUser(@RequestBody LoginDTO body){
         try {
-            return authenticationService.loginUser(body.getUsername(), body.getPassword());
+            return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
         }catch (Exception e)
         {
-            throw e;
+            return ResponseEntity.badRequest().build();
         }
     }
 

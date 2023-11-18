@@ -20,6 +20,7 @@ public class LibarterBeApplication {
 		SpringApplication.run(LibarterBeApplication.class, args);
 	}
 
+
 	@Bean
 	CommandLineRunner run(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder){
 		return args -> {

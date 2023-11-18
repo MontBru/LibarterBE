@@ -3,10 +3,7 @@ package com.bryan.libarterbe.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,9 +15,9 @@ public class TokenService {
     private JwtEncoder jwtEncoder;
 
     @Autowired
-    private JwtDecoder jwtDecoder;
+    public JwtDecoder jwtDecoder;
 
-    public String generateJwt(Authentication auth)
+    public String generateJwt(Authentication auth, int id)
     {
         Instant now = Instant.now();
 
@@ -29,9 +26,10 @@ public class TokenService {
                 .collect(Collectors.joining(" "));
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("self")
+                .issuer("libarter")
                 .issuedAt(now)
                 .subject(auth.getName())
+                .claim("uid", id)
                 .claim("roles",scope)
                 .build();
 

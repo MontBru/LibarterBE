@@ -1,4 +1,4 @@
-package com.bryan.libarterbe.controller;
+package com.bryan.libarterbe.controller.User;
 
 import com.bryan.libarterbe.service.BarcodeService;
 import com.google.zxing.NotFoundException;
@@ -7,10 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/user/barcode")
-@CrossOrigin("*")
 public class BarcodeController {
     @Autowired
     BarcodeService barcodeService;
@@ -18,11 +19,6 @@ public class BarcodeController {
     @PostMapping("/readBarcode")
     public ResponseEntity<String> readBarcode(@RequestBody String image)
     {
-        image=image.replace("\"","");
-        if(image.startsWith("data:image/png;base64,"))
-        {
-            image = image.replace("data:image/png;base64,","");
-        }
         try {
             return ResponseEntity.ok(barcodeService.readBarcode(image));
         }

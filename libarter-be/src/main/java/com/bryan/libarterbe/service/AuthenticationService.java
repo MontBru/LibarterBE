@@ -1,12 +1,9 @@
 package com.bryan.libarterbe.service;
 
-import com.bryan.libarterbe.DTO.LoginResponseDTO;
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Role;
 import com.bryan.libarterbe.repository.RoleRepository;
 import com.bryan.libarterbe.repository.UserRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +35,9 @@ public class AuthenticationService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private UserService userService;
+
     public ApplicationUser registerUser(String username, String password, String email, String phoneNumber){
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
@@ -51,15 +51,16 @@ public class AuthenticationService {
         return userRepository.save(new ApplicationUser(0, encodedPassword, email, username, phoneNumber, authorities));
     }
 
-    public LoginResponseDTO loginUser(String username, String password){
+    public String loginUser(String username, String password){
 
         try{
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
-            String token = tokenService.generateJwt(auth);
+            ApplicationUser user = userService.getUserByUsername(username);
+            String token = tokenService.generateJwt(auth, user.getId());
 
-            return new LoginResponseDTO(userRepository.findByUsername(username).get().getId(), token);
+            return token;
 
         }catch (AuthenticationException e){
             throw e;

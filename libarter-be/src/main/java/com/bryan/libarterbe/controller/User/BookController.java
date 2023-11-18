@@ -1,4 +1,4 @@
-package com.bryan.libarterbe.controller;
+package com.bryan.libarterbe.controller.User;
 
 import com.bryan.libarterbe.DTO.*;
 import com.bryan.libarterbe.model.Book;
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user/book")
-@CrossOrigin("*")
 public class BookController {
     @Autowired
     private BookService bookService;
@@ -46,19 +45,6 @@ public class BookController {
         }
     }
 
-    @GetMapping("/getById/{id}")
-    @Transactional
-    public ResponseEntity<BookDTO> getById(@PathVariable int id) {
-        Optional<Book> bookOptional = bookService.getBookById(id);
-
-        if (bookOptional.isPresent()) {
-            Book book = bookOptional.get();
-            BookDTO bookDTO = BookDTO.bookToBookDTO(book);
-            return ResponseEntity.ok(bookDTO); // Return 200 OK with the book entity
-        } else {
-            return ResponseEntity.notFound().build(); // Return 404 Not Found
-        }
-    }
     @GetMapping("/getAll")
     @Transactional
     public ResponseEntity<List<BookDTO>> getAllBooks(){

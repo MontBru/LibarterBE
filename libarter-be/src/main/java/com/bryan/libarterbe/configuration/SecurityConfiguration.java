@@ -9,6 +9,8 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,6 +27,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SecurityConfiguration {
@@ -48,16 +59,20 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+
         return http
-//                .requiresChannel(channel ->
+                .cors(Customizer.withDefaults())
+                //                .requiresChannel(channel ->
 //                        channel.anyRequest().requiresSecure())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->{
-                    auth.anyRequest().permitAll();
-//                    auth.requestMatchers("/auth/**").permitAll();
-//                    auth.requestMatchers("/admin/**").hasRole("ADMIN");
-//                    auth.requestMatchers("/user/**").hasAnyRole("ADMIN","USER");
-//                    auth.anyRequest().authenticated();
+//                    auth.anyRequest().permitAll();
+                    auth.requestMatchers("/auth/**").permitAll();
+                    auth.requestMatchers("/admin/**").hasRole("ADMIN");
+//                    auth.requestMatchers("/user/**").permitAll();
+                    auth.requestMatchers("/user/**").hasAnyRole("ADMIN","USER");
+                    auth.requestMatchers("/public/**").permitAll();
+                    auth.anyRequest().authenticated();
                 })
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
@@ -66,6 +81,18 @@ public class SecurityConfiguration {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
     @Bean
     public JwtDecoder jwtDecoder(){

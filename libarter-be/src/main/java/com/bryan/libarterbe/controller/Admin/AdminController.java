@@ -1,4 +1,4 @@
-package com.bryan.libarterbe.controller;
+package com.bryan.libarterbe.controller.Admin;
 
 import com.bryan.libarterbe.service.UserService;
 import jakarta.transaction.Transactional;
@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin("*")
 public class AdminController {
     @Autowired
     private UserService userService;

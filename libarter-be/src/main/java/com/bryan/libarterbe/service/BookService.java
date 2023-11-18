@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import com.bryan.libarterbe.repository.BookRepository;
 import org.springframework.data.domain.Pageable;
@@ -49,14 +51,14 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
-    public byte[] downloadImageAsBytes(String imageUrl) throws IOException {
-        URL url = new URL(imageUrl);
-
-        try (InputStream in = url.openStream()) {
-            byte[] imageBytes = StreamUtils.copyToByteArray(in);
-            return imageBytes;
-        }
-    }
+//    public byte[] downloadImageAsBytes(String imageUrl) throws IOException {
+//        URL url = new URL(imageUrl);
+//
+//        try (InputStream in = url.openStream()) {
+//            byte[] imageBytes = StreamUtils.copyToByteArray(in);
+//            return imageBytes;
+//        }
+//    }
 
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
@@ -131,13 +133,15 @@ public class BookService {
     {
         List<Tag> tags=stringsToTags(bookDTO.getTags());
         try {
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             Book book = new Book(
                     bookDTO.getIsRequest(),
                     bookDTO.getName(),
                     bookDTO.getAuthor(),
                     bookDTO.getDescription(),
                     bookDTO.getPrice(),
-                    userService.getUserById(bookDTO.getUserId()),
+                    userService.getUserById(Math.toIntExact(jwt.getClaim("uid"))),
                     //bookDTO.getPhotos(),
                     new LinkedList<>(),
                     bookDTO.isAcceptsTrade(),
@@ -160,7 +164,8 @@ public class BookService {
 
         if (existingBookOptional.isPresent()) {
             List<Tag> tags=stringsToTags(bookDTO.getTags());
-            System.out.println(bookDTO.getUserId());
+            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             Book existingBook = new Book(
                     id,
                     bookDTO.getIsRequest(),
@@ -168,7 +173,7 @@ public class BookService {
                     bookDTO.getAuthor(),
                     bookDTO.getDescription(),
                     bookDTO.getPrice(),
-                    userService.getUserById(bookDTO.getUserId()),
+                    userService.getUserById(Math.toIntExact(jwt.getClaim("uid"))),
                     //bookDTO.getPhotos(),
                     new LinkedList<>(),
                     bookDTO.isAcceptsTrade(),
