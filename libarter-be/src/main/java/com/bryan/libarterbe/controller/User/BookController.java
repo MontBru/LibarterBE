@@ -72,26 +72,6 @@ public class BookController {
         }
     }
 
-    @PostMapping("/getBooksBySearch")
-    @Transactional
-    public ResponseEntity<BookPageDTO> getBooksBySearch(@RequestBody SearchBooksDTO body)
-    {
-        return bookService.searchBooks(body, 1, body.isRequest());
-    }
-
-    @PostMapping("/getBooksByAuthorSearch")
-    @Transactional
-    public ResponseEntity<BookPageDTO> getBooksByAuthorSearch(@RequestBody SearchBooksDTO body)
-    {
-        return bookService.searchBooks(body, 2, body.isRequest());
-    }
-
-    @PostMapping("/getBooksByTagSearch")
-    @Transactional
-    public ResponseEntity<BookPageDTO> getBooksByTagSearch(@RequestBody SearchBooksDTO body)
-    {
-        return bookService.searchBooks(body, 3, body.isRequest());
-    }
     @GetMapping("/getBookByISBN/{isbn}")
     public ResponseEntity<BookInfoDTO> getBookByISBN(@PathVariable long isbn)
     {
