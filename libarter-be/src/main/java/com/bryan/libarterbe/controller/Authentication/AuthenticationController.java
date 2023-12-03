@@ -1,7 +1,10 @@
 package com.bryan.libarterbe.controller.Authentication;
 
+import com.bryan.libarterbe.DTO.EmailRequest;
 import com.bryan.libarterbe.DTO.LoginDTO;
 import com.bryan.libarterbe.DTO.RegistrationDTO;
+import com.bryan.libarterbe.DTO.ResetPasswordDTO;
+import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,4 +48,27 @@ public class AuthenticationController {
         }
     }
 
+
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest emailReq)
+    {
+        String email = emailReq.getEmail();
+        System.out.println(email);
+        try {
+            authenticationService.forgotPassword(email);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO)
+    {
+        boolean res = authenticationService.resetPassword(resetPasswordDTO.getToken(), resetPasswordDTO.getNewPassword());
+        if (res)
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().build();
+    }
 }

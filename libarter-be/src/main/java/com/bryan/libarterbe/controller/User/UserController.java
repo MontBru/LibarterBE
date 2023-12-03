@@ -43,12 +43,13 @@ public class UserController {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         try {
-
             List<Book> books = userService.getUserById(Math.toIntExact(jwt.getClaim("uid"))).getBooks();
+
             books = books
                     .stream()
                     .filter((Book b)->b.getIsRequest()==isRequest)
                     .collect(Collectors.toList());
+
             return ResponseEntity.ok(BookDTO.booklistToBookDTOlist(books));
         } catch (Exception e) {
             e.printStackTrace();
