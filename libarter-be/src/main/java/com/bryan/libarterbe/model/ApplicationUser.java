@@ -28,6 +28,12 @@ public class ApplicationUser implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Book> books = new ArrayList<Book>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Conversation> conversations = new ArrayList<Conversation>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Message> messages = new ArrayList<Message>();
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="user_role_junction",
@@ -59,6 +65,22 @@ public class ApplicationUser implements UserDetails {
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.authorities = authorities;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public List<Conversation> getConversations() {
+        return conversations;
+    }
+
+    public void setConversations(List<Conversation> conversations) {
+        this.conversations = conversations;
     }
 
     public Integer getId() {

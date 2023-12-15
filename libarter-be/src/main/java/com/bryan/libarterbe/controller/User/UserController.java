@@ -3,6 +3,7 @@ package com.bryan.libarterbe.controller.User;
 import com.bryan.libarterbe.DTO.BookDTO;
 import com.bryan.libarterbe.DTO.SearchBooksDTO;
 import com.bryan.libarterbe.DTO.UserDTO;
+import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Book;
 import com.bryan.libarterbe.service.TokenService;
 import com.bryan.libarterbe.service.UserService;
@@ -26,6 +27,12 @@ public class UserController {
     @Autowired
     private TokenService tokenService;
 
+    @GetMapping("/")
+    public ResponseEntity<String> checkAuthorization()
+    {
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/getAllUsers")
     @Transactional
     public List<UserDTO> getAllUsers(){
@@ -36,14 +43,30 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/getLoggedUser")
+    @Transactional
+    public ResponseEntity<UserDTO> getLoggedUser(){
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int uid = Math.toIntExact(jwt.getClaim("uid"));
+
+        try {
+            return ResponseEntity.ok(UserDTO.UserToUserDTO(userService.getUserById(uid)));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+
+    }
+
     @GetMapping("/getAllBooksByUID/{isRequest}")
     @Transactional
     public ResponseEntity<List<BookDTO>> getAllBooksByUID(@PathVariable boolean isRequest)
     {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int uid = Math.toIntExact(jwt.getClaim("uid"));
 
         try {
-            List<Book> books = userService.getUserById(Math.toIntExact(jwt.getClaim("uid"))).getBooks();
+            List<Book> books = userService.getUserById(uid).getBooks();
 
             books = books
                     .stream()
