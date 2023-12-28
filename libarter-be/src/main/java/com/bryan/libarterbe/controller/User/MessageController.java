@@ -29,7 +29,7 @@ public class MessageController {
         int uid = Math.toIntExact(jwt.getClaim("uid"));
 
         List<Conversation> conversations = messageService.getAllConversationsOfUser(asClient, uid);
-        return ResponseEntity.ok(ConversationDTO.conversationListToConversationDTOList(conversations));
+        return ResponseEntity.ok(messageService.conversationListToConversationDTOList(conversations));
     }
 
 //    @GetMapping("/getConversation/{id}")

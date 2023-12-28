@@ -14,7 +14,7 @@ public class Message {
     private String body;
     private LocalDateTime time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user")
     private ApplicationUser user;
 
