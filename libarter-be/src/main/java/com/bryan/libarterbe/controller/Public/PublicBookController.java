@@ -21,10 +21,9 @@ public class PublicBookController{
     @GetMapping("/getById/{id}")
     @Transactional
     public ResponseEntity<BookDTO> getById(@PathVariable int id) {
-        Optional<Book> bookOptional = bookService.getBookById(id);
+        Book book = bookService.getBookById(id);
 
-        if (bookOptional.isPresent()) {
-            Book book = bookOptional.get();
+        if (book != null) {
             BookDTO bookDTO = BookDTO.bookToBookDTO(book);
             return ResponseEntity.ok(bookDTO); // Return 200 OK with the book entity
         } else {

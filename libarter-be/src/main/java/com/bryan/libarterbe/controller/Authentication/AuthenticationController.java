@@ -1,5 +1,6 @@
 package com.bryan.libarterbe.controller.Authentication;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.bryan.libarterbe.DTO.EmailRequest;
 import com.bryan.libarterbe.DTO.LoginDTO;
 import com.bryan.libarterbe.DTO.RegistrationDTO;
@@ -30,12 +31,16 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationDTO body){
-        if(isPhoneNumberValid( body.getPhoneNumber() )) {
-            authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber());
-            return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
+        try {
+            if (isPhoneNumberValid(body.getPhoneNumber())) {
+                authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber());
+                return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
+            } else
+                return ResponseEntity.internalServerError().build();
         }
-        else
-            return ResponseEntity.badRequest().build();
+        catch (Exception e){
+            return ResponseEntity.internalServerError().build();//user exists
+        }
     }
 
     @PostMapping("/login")
@@ -44,7 +49,7 @@ public class AuthenticationController {
             return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
         }catch (Exception e)
         {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

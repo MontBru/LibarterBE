@@ -1,19 +1,18 @@
 package com.bryan.libarterbe.controller.User;
 
-import com.bryan.libarterbe.DTO.ConversationDTO;
-import com.bryan.libarterbe.DTO.MessageCreateDTO;
+import com.bryan.libarterbe.DTO.*;
 import com.bryan.libarterbe.model.Conversation;
+import com.bryan.libarterbe.model.Message;
 import com.bryan.libarterbe.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user/message")
@@ -36,24 +35,53 @@ public class MessageController {
 //    public ResponseEntity<>
 
 
-
-    @PostMapping("/addMessage")
-    public ResponseEntity<String> addMessage(@RequestBody MessageCreateDTO messageDTO)
+    @PostMapping("/addConversation/{offerId}")
+    public ResponseEntity<Integer> addConversation(@PathVariable int offerId)
     {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int uid = Math.toIntExact(jwt.getClaim("uid"));
         Conversation conversation;
 
         try {
-            conversation = messageService.getConversationByBookAndUser(messageDTO.getBookId(), uid);
+            conversation = messageService.getConversationByBookAndUser(offerId, uid);
         } catch (Exception e) {
-            conversation = messageService.addConversation(messageDTO.getBookId(), uid);
+            conversation = messageService.addConversation(offerId, uid);
         }
-        boolean response = messageService.addMessage(messageDTO.getBody(), LocalDateTime.now(), conversation, uid);
+        return ResponseEntity.ok(conversation.getId());
+    }
 
-        if(response == false)
+    @PostMapping("/addMessage")
+    public ResponseEntity<MessageDTO> addMessage(@RequestBody MessageCreateDTO messageDTO)
+    {
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int uid = Math.toIntExact(jwt.getClaim("uid"));
+        Conversation conversation;
+        try {
+            conversation = messageService.getConversationById(messageDTO.getConversationId());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+        Message response = messageService.addMessage(messageDTO.getBody(), LocalDateTime.now(), conversation, uid);
+
+        if(response == null)
             return ResponseEntity.notFound().build();
         else
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(messageService.messageToMessageDTO(response, uid));
+    }
+
+    @PostMapping("/getMessagesByConversation")
+    public ResponseEntity<MessagePageDTO> getMessagesByConversation(@RequestBody GetMessagesDTO getMessagesDTO)
+    {
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int uid = Math.toIntExact(jwt.getClaim("uid"));
+
+        Conversation conversation = messageService.getConversationById(getMessagesDTO.getConversationId());
+
+        if(conversation == null || (conversation.getUser().getId() != uid && conversation.getBook().getUser().getId() != uid))
+            return ResponseEntity.badRequest().build();
+
+        Page<Message> messagePage = messageService.getMessagesByConversation(getMessagesDTO.getConversationId(), getMessagesDTO.getPageNum(), 10);
+
+        return ResponseEntity.ok(new MessagePageDTO(messagePage.getTotalPages(), messageService.messageListToMessageDTOList(messagePage.getContent())));
     }
 }

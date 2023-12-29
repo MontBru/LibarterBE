@@ -43,7 +43,7 @@ public class Book {
     )
     private List<Tag> tags;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user")
     private ApplicationUser user;
 

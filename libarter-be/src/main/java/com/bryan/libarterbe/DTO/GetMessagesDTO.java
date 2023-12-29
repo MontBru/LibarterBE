@@ -1,13 +1,12 @@
 package com.bryan.libarterbe.DTO;
 
-public class MessageCreateDTO {
-    String body;
-
+public class GetMessagesDTO {
     int conversationId;
+    int pageNum;
 
-    public MessageCreateDTO(String body, int conversationId) {
-        this.body = body;
+    public GetMessagesDTO(int conversationId, int pageNum) {
         this.conversationId = conversationId;
+        this.pageNum = pageNum;
     }
 
     public int getConversationId() {
@@ -18,11 +17,11 @@ public class MessageCreateDTO {
         this.conversationId = conversationId;
     }
 
-    public String getBody() {
-        return body;
+    public int getPageNum() {
+        return pageNum;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
     }
 }

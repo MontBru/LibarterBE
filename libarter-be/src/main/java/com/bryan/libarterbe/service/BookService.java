@@ -47,8 +47,12 @@ public class BookService {
     }
 
 
-    public Optional<Book> getBookById(int id) {
-        return bookRepository.findById(id);
+    public Book getBookById(int id) {
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if(optionalBook.isPresent())
+            return optionalBook.get();
+        else
+            return null;
     }
 
 //    public byte[] downloadImageAsBytes(String imageUrl) throws IOException {
@@ -160,13 +164,13 @@ public class BookService {
     }
 
     public Book updateBook(BookDTO bookDTO, int id) throws Exception {
-        Optional<Book> existingBookOptional = getBookById(id);
+        Book existingBook = getBookById(id);
 
-        if (existingBookOptional.isPresent()) {
+        if (existingBook != null) {
             List<Tag> tags=stringsToTags(bookDTO.getTags());
             Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            Book existingBook = new Book(
+            existingBook = new Book(
                     id,
                     bookDTO.getIsRequest(),
                     bookDTO.getName(),

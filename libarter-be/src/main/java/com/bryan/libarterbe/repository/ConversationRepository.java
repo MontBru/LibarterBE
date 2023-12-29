@@ -10,5 +10,5 @@ public interface ConversationRepository extends JpaRepository<Conversation,Integ
     Optional<Conversation> findConversationByBook_IdAndUser_Id(int bookId, int userId);
     List<Conversation> findConversationsByUser_Id(int userId);
 
-    List<Conversation> findConversationsByBookUser_Id(int userId);
+    List<Conversation> findConversationsByBook_User_Id(int bookUserId);
 }
