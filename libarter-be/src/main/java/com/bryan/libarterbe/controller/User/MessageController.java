@@ -31,10 +31,6 @@ public class MessageController {
         return ResponseEntity.ok(messageService.conversationListToConversationDTOList(conversations));
     }
 
-//    @GetMapping("/getConversation/{id}")
-//    public ResponseEntity<>
-
-
     @PostMapping("/addConversation/{offerId}")
     public ResponseEntity<Integer> addConversation(@PathVariable int offerId)
     {

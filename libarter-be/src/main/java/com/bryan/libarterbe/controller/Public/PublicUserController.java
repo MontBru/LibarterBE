@@ -1,6 +1,7 @@
 package com.bryan.libarterbe.controller.Public;
 
 import com.bryan.libarterbe.DTO.UserDTO;
+import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,10 @@ public class PublicUserController{
     @GetMapping("/getById/{id}")
     @Transactional
     public ResponseEntity<UserDTO> getUserByUID(@PathVariable int id) {
-        try {
-            return ResponseEntity.ok(UserDTO.UserToUserDTO(userService.getUserById(id)));
-        } catch (Exception e)
+        ApplicationUser user = userService.getUserById(id);
+        if(user!=null)
+            return ResponseEntity.ok(UserDTO.UserToUserDTO(user));
+        else
         {
             return ResponseEntity.notFound().build();
         }

@@ -49,6 +49,7 @@ public class MessageService {
     public List<Conversation> getAllConversationsOfUser(boolean asClient, int uid)
     {
         List<Conversation> conversations;
+
         if(asClient)
         {
             conversations = conversationRepository.findConversationsByUser_Id(uid);
@@ -63,37 +64,29 @@ public class MessageService {
 
     public Conversation addConversation(int bookId, int userId)
     {
-        try {
-            Book book = bookService.getBookById(bookId);
-            if(book == null)
-                return null;
-
-            ApplicationUser user = userService.getUserById(userId);
-
-            Conversation conversation = new Conversation(book, user);
-            conversationRepository.save(conversation);
-            return conversation;
-        }catch (Exception e)
-        {
-            e.printStackTrace();
+        Book book = bookService.getBookById(bookId);
+        if(book == null)
             return null;
-        }
+
+        ApplicationUser user = userService.getUserById(userId);
+        if(user == null)
+            return null;
+
+        Conversation conversation = new Conversation(book, user);
+        conversationRepository.save(conversation);
+        return conversation;
     }
 
     public Message addMessage(String body, LocalDateTime time, Conversation conversation, int userId)
     {
-        try{
-            if(userId != conversation.getUser().getId() && userId != conversation.getBook().getUser().getId())
-                return null;
-            ApplicationUser user = userService.getUserById(userId);
-            Message message = new Message(body, time, conversation, user);
-            messageRepository.save(message);
-            return message;
-        }catch (Exception e)
-        {
-            e.printStackTrace();
+        if(userId != conversation.getUser().getId() && userId != conversation.getBook().getUser().getId())
             return null;
-        }
+        ApplicationUser user = userService.getUserById(userId);
+        if(user == null)
+            return null;
+        Message message = new Message(body, time, conversation, user);
+        messageRepository.save(message);
+        return message;
     }
 
     public Conversation getConversationById(int id)
@@ -152,7 +145,7 @@ public class MessageService {
 
     public List<ConversationDTO> conversationListToConversationDTOList(List<Conversation> conversationList)
     {
-        return conversationList.stream().map(conversation -> conversationToConversationDTO(conversation)).collect(Collectors.toList());
+        return conversationList.stream().map(conversation -> conversationToConversationDTO(conversation)).filter((conversation)->conversation.getLastMessage()!=null).sorted((conversation1, conversation2)->-conversation1.getLastMessage().getTime().compareTo(conversation2.getLastMessage().getTime())).collect(Collectors.toList());
     }
 
 

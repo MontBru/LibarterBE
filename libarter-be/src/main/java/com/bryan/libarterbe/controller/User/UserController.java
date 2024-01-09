@@ -49,9 +49,13 @@ public class UserController {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int uid = Math.toIntExact(jwt.getClaim("uid"));
 
-        try {
-            return ResponseEntity.ok(UserDTO.UserToUserDTO(userService.getUserById(uid)));
-        } catch (Exception e) {
+        ApplicationUser user = userService.getUserById(uid);
+        if(user != null)
+        {
+            return ResponseEntity.ok(UserDTO.UserToUserDTO(user));
+        }
+        else
+        {
             return ResponseEntity.internalServerError().build();
         }
 
@@ -66,7 +70,13 @@ public class UserController {
         int uid = Math.toIntExact(jwt.getClaim("uid"));
 
         try {
-            List<Book> books = userService.getUserById(uid).getBooks();
+            ApplicationUser user = userService.getUserById(uid);
+            if(user == null)
+            {
+                return ResponseEntity.internalServerError().build();
+            }
+
+            List<Book> books = user.getBooks();
 
             books = books
                     .stream()
@@ -74,8 +84,8 @@ public class UserController {
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(BookDTO.booklistToBookDTOlist(books));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e)
+        {
             return ResponseEntity.notFound().build();
         }
     }

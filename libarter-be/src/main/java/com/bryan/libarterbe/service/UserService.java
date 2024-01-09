@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -34,8 +35,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("couldn't find user with this username"));
     }
 
-    public ApplicationUser getUserById(int id) throws Exception {
-        return userRepository.findById(id).orElseThrow(() -> new Exception("couldn't find user with this id"));
+    public ApplicationUser getUserById(int id) {
+        Optional<ApplicationUser> userOptional = userRepository.findById(id);
+        if(userOptional.isPresent())
+            return userOptional.get();
+        else
+            return null;
     }
     public List<ApplicationUser> getAllUsers()
     {
