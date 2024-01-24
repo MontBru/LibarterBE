@@ -49,7 +49,7 @@ public class BookController {
     @Transactional
     public ResponseEntity<List<BookDTO>> getAllBooks(){
         List<Book> books = bookService.getAllBooks();
-        List<BookDTO> bookDTOs = BookDTO.booklistToBookDTOlist(books);
+        List<BookDTO> bookDTOs = bookService.booklistToBookDTOlist(books);
         return ResponseEntity.ok(bookDTOs);
     }
 
@@ -66,7 +66,7 @@ public class BookController {
     {
         try {
             Book savedBook=bookService.updateBook(updatedBook, id);
-            return ResponseEntity.ok(BookDTO.bookToBookDTO(savedBook));
+            return ResponseEntity.ok(bookService.bookToBookDTO(savedBook));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

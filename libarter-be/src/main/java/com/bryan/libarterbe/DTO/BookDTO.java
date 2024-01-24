@@ -4,6 +4,7 @@ import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Book;
 import com.bryan.libarterbe.model.Tag;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,33 +31,6 @@ public class BookDTO {
 
     private String language;
     private int yearPublished;
-
-    public static BookDTO bookToBookDTO(Book book) {
-        return new BookDTO(
-                book.getId(),
-                book.getIsRequest(),
-                book.getName(),
-                book.getAuthor(),
-                book.getDescription(),
-                book.getPrice(),
-                book.getUser().getId(),
-                book.getPhotos(),
-                book.isAcceptsTrade(),
-                book.isNew(),
-                book.getIsbn(),
-                book.getTags().stream().map((Tag tag) ->{ return tag.getText();}).collect(Collectors.toList()),
-                book.getPublisher(),
-                book.getLanguage(),
-                book.getYearPublished()
-                );
-    }
-
-    public static List<BookDTO> booklistToBookDTOlist(List<Book> books)
-    {
-        return books.stream()
-            .map(BookDTO::bookToBookDTO)
-            .collect(Collectors.toList());
-    }
 
     public BookDTO(
             int id,

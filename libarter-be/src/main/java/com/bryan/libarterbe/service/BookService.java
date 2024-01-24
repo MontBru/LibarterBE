@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,9 @@ public class BookService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StorageService storageService;
+
     public Book saveBook(Book book) {
         return bookRepository.save(book);
     }
@@ -49,26 +53,35 @@ public class BookService {
 
     public Book getBookById(int id) {
         Optional<Book> optionalBook = bookRepository.findById(id);
-        if(optionalBook.isPresent())
-            return optionalBook.get();
-        else
+        if(!optionalBook.isPresent())
             return null;
+
+        return optionalBook.get();
     }
 
-//    public byte[] downloadImageAsBytes(String imageUrl) throws IOException {
-//        URL url = new URL(imageUrl);
-//
-//        try (InputStream in = url.openStream()) {
-//            byte[] imageBytes = StreamUtils.copyToByteArray(in);
-//            return imageBytes;
-//        }
-//    }
+    public BookDTO getBookDTOById(int id)
+    {
+        Book book = getBookById(id);
+        if(book == null)
+            return null;
+
+        BookDTO bookDTO = bookToBookDTO(book);
+        return bookDTO;
+    }
 
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
     public void deleteById(int id) {
+        Book book = getBookById(id);
+        if(book == null)
+            return;
+
+
+        book.getPhotos().forEach((photo)->{
+            storageService.deleteResource(photo);
+        });
         bookRepository.deleteById(id);
     }
 
@@ -84,7 +97,7 @@ public class BookService {
         else
             bookPage = bookRepository.findBooksByNameContainingAndAuthorContainingAndLanguageContainingAndIsRequestIs(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getLanguage(), bookDTO.getIsRequest(), pageable);
 
-        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
+        List<BookDTO> bookDTOList = booklistToBookDTOlist(bookPage.getContent());
 
         return bookDTOList;
     }
@@ -112,8 +125,7 @@ public class BookService {
             else
                 bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
         }
-        List<BookDTO> bookDTOList = BookDTO.booklistToBookDTOlist(bookPage.getContent());
-
+        List<BookDTO> bookDTOList = booklistToBookDTOlist(bookPage.getContent());
 
         return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
     }
@@ -138,6 +150,16 @@ public class BookService {
         List<Tag> tags=stringsToTags(bookDTO.getTags());
         try {
             Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            int uid = Math.toIntExact(jwt.getClaim("uid"));
+
+            List<String> photos = new LinkedList<>();
+
+            for(int i = 0; i<bookDTO.getPhotos().size();i++)
+            {
+                String filename = storageService.generateFilename(uid, i);
+                storageService.writeResource(filename, bookDTO.getPhotos().get(i));
+                photos.add(filename);
+            }
 
             Book book = new Book(
                     bookDTO.getIsRequest(),
@@ -146,8 +168,7 @@ public class BookService {
                     bookDTO.getDescription(),
                     bookDTO.getPrice(),
                     userService.getUserById(Math.toIntExact(jwt.getClaim("uid"))),
-                    //bookDTO.getPhotos(),
-                    new LinkedList<>(),
+                    photos,
                     bookDTO.isAcceptsTrade(),
                     bookDTO.isNew(),
                     bookDTO.getIsbn(),
@@ -156,6 +177,7 @@ public class BookService {
                     bookDTO.getLanguage(),
                     bookDTO.getYearPublished());
             saveBook(book);
+
             return book;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -166,34 +188,50 @@ public class BookService {
     public Book updateBook(BookDTO bookDTO, int id) throws Exception {
         Book existingBook = getBookById(id);
 
-        if (existingBook != null) {
-            List<Tag> tags=stringsToTags(bookDTO.getTags());
-            Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-            existingBook = new Book(
-                    id,
-                    bookDTO.getIsRequest(),
-                    bookDTO.getName(),
-                    bookDTO.getAuthor(),
-                    bookDTO.getDescription(),
-                    bookDTO.getPrice(),
-                    userService.getUserById(Math.toIntExact(jwt.getClaim("uid"))),
-                    //bookDTO.getPhotos(),
-                    new LinkedList<>(),
-                    bookDTO.isAcceptsTrade(),
-                    bookDTO.isNew(),
-                    bookDTO.getIsbn(),
-                    tags,
-                    bookDTO.getPublisher(),
-                    bookDTO.getLanguage(),
-                    bookDTO.getYearPublished()
-                    );
-
-            saveBook(existingBook);
-            return existingBook;
-        } else {
+        if(existingBook == null)
             throw new Exception();
+
+        List<Tag> tags=stringsToTags(bookDTO.getTags());
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int uid = Math.toIntExact(jwt.getClaim("uid"));
+
+        if(uid != bookDTO.getUserId() || uid != existingBook.getUser().getId())
+            return null;
+
+        existingBook.getPhotos().forEach((photo)->{
+            storageService.deleteResource(photo);
+        });
+
+        List<String> photos = new LinkedList<>();
+
+        for(int i = 0; i<bookDTO.getPhotos().size();i++)
+        {
+            System.out.println(bookDTO.getPhotos().get(i));
+            String filename = storageService.generateFilename(uid, i);
+            storageService.writeResource(filename, bookDTO.getPhotos().get(i));
+            photos.add(filename);
         }
+
+        existingBook = new Book(
+                id,
+                bookDTO.getIsRequest(),
+                bookDTO.getName(),
+                bookDTO.getAuthor(),
+                bookDTO.getDescription(),
+                bookDTO.getPrice(),
+                userService.getUserById(Math.toIntExact(jwt.getClaim("uid"))),
+                photos,
+                bookDTO.isAcceptsTrade(),
+                bookDTO.isNew(),
+                bookDTO.getIsbn(),
+                tags,
+                bookDTO.getPublisher(),
+                bookDTO.getLanguage(),
+                bookDTO.getYearPublished()
+                );
+
+        saveBook(existingBook);
+        return existingBook;
     }
 
     private static HttpURLConnection con;
@@ -285,5 +323,36 @@ public class BookService {
         {
             throw e;
         }
+    }
+
+    public BookDTO bookToBookDTO(Book book) {
+        List<String> photos = new LinkedList<>();
+        book.getPhotos().forEach((photo)->{
+            photos.add(storageService.readResource(photo));
+        });
+        return new BookDTO(
+                book.getId(),
+                book.getIsRequest(),
+                book.getName(),
+                book.getAuthor(),
+                book.getDescription(),
+                book.getPrice(),
+                book.getUser().getId(),
+                photos,
+                book.isAcceptsTrade(),
+                book.isNew(),
+                book.getIsbn(),
+                book.getTags().stream().map((Tag tag) ->{ return tag.getText();}).collect(Collectors.toList()),
+                book.getPublisher(),
+                book.getLanguage(),
+                book.getYearPublished()
+        );
+    }
+
+    public List<BookDTO> booklistToBookDTOlist(List<Book> books)
+    {
+        return books.stream()
+                .map(this::bookToBookDTO)
+                .collect(Collectors.toList());
     }
 }

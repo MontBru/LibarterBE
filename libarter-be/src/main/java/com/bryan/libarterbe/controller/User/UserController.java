@@ -5,6 +5,7 @@ import com.bryan.libarterbe.DTO.SearchBooksDTO;
 import com.bryan.libarterbe.DTO.UserDTO;
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Book;
+import com.bryan.libarterbe.service.BookService;
 import com.bryan.libarterbe.service.TokenService;
 import com.bryan.libarterbe.service.UserService;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,9 @@ public class UserController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private BookService bookService;
 
     @GetMapping("/")
     public ResponseEntity<String> checkAuthorization()
@@ -83,7 +87,7 @@ public class UserController {
                     .filter((Book b)->b.getIsRequest()==isRequest)
                     .collect(Collectors.toList());
 
-            return ResponseEntity.ok(BookDTO.booklistToBookDTOlist(books));
+            return ResponseEntity.ok(bookService.booklistToBookDTOlist(books));
         } catch (Exception e)
         {
             return ResponseEntity.notFound().build();
