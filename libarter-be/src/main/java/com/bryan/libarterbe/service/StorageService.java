@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.BlobStorageException;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
@@ -38,9 +39,19 @@ public class StorageService {
         }
     }
 
-    public void deleteResource(String filename)
+    public boolean deleteResource(String filename)
     {
-        BlobClient blobClient = containerClient.getBlobClient(filename);
-        blobClient.delete();
+        try {
+            BlobClient blobClient = containerClient.getBlobClient(filename);
+            blobClient.delete();
+            return true;
+        }catch (BlobStorageException e)
+        {
+            if(e.getStatusCode() == 404)
+            {
+                return true;
+            }
+            else return false;
+        }
     }
 }
