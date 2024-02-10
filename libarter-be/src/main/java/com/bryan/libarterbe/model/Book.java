@@ -35,7 +35,7 @@ public class Book {
     private String language;
     private int yearPublished;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name="book_tag_junction",
             joinColumns = {@JoinColumn(name="book_id")},

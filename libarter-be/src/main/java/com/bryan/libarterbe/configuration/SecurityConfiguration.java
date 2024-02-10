@@ -26,6 +26,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,14 +63,10 @@ public class SecurityConfiguration {
 
         return http
                 .cors(Customizer.withDefaults())
-                //                .requiresChannel(channel ->
-//                        channel.anyRequest().requiresSecure())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->{
-//                    auth.anyRequest().permitAll();
                     auth.requestMatchers("/auth/**").permitAll();
                     auth.requestMatchers("/admin/**").hasRole("ADMIN");
-//                    auth.requestMatchers("/user/**").permitAll();
                     auth.requestMatchers("/user/**").hasAnyRole("ADMIN","USER");
                     auth.requestMatchers("/public/**").permitAll();
                     auth.anyRequest().authenticated();
@@ -88,7 +85,6 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedOrigins(List.of(FrontendEndpoint.endpoint));
-//        configuration.setAllowedOrigins(List.of(FrontendEndpoint.endpoint));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

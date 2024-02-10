@@ -40,24 +40,23 @@ public class BookController {
             return ResponseEntity.ok(bookDTO);
         }catch(Exception e)
         {
-            e.printStackTrace();
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.internalServerError().build();
         }
-    }
-
-    @GetMapping("/getAll")
-    @Transactional
-    public ResponseEntity<List<BookDTO>> getAllBooks(){
-        List<Book> books = bookService.getAllBooks();
-        List<BookDTO> bookDTOs = bookService.booklistToBookDTOlist(books);
-        return ResponseEntity.ok(bookDTOs);
     }
 
     @DeleteMapping("deleteById/{id}")
     @Transactional
     public ResponseEntity<String> deleteById(@PathVariable int id){
-        bookService.deleteById(id);
-        return ResponseEntity.ok("Book deleted");
+
+        try {
+            bookService.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @PutMapping("updateById/{id}")
@@ -68,7 +67,7 @@ public class BookController {
             Book savedBook=bookService.updateBook(updatedBook, id);
             return ResponseEntity.ok(bookService.bookToBookDTO(savedBook));
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -89,7 +88,6 @@ public class BookController {
             return ResponseEntity.ok(bookService.searchSuggestedBooks(bookDTO));
         }catch (Exception e)
         {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }

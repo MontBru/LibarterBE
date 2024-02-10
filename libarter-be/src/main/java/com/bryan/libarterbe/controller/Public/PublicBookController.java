@@ -24,9 +24,9 @@ public class PublicBookController{
         BookDTO book = bookService.getBookDTOById(id);
 
         if (book != null) {
-            return ResponseEntity.ok(book); // Return 200 OK with the book entity
+            return ResponseEntity.ok(book);
         } else {
-            return ResponseEntity.notFound().build(); // Return 404 Not Found
+            return ResponseEntity.notFound().build();
         }
     }
 

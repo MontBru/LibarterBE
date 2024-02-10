@@ -8,6 +8,7 @@ import com.bryan.libarterbe.model.Book;
 import com.bryan.libarterbe.service.BookService;
 import com.bryan.libarterbe.service.TokenService;
 import com.bryan.libarterbe.service.UserService;
+import com.bryan.libarterbe.utils.JwtUtility;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,21 +38,10 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/getAllUsers")
-    @Transactional
-    public List<UserDTO> getAllUsers(){
-        return userService.getAllUsers().stream()
-                .map(user ->{
-                    return UserDTO.UserToUserDTO(user);
-                })
-                .collect(Collectors.toList());
-    }
-
     @GetMapping("/getLoggedUser")
     @Transactional
     public ResponseEntity<UserDTO> getLoggedUser(){
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int uid = Math.toIntExact(jwt.getClaim("uid"));
+        int uid = JwtUtility.getUid();
 
         ApplicationUser user = userService.getUserById(uid);
         if(user != null)
@@ -70,22 +60,16 @@ public class UserController {
     @Transactional
     public ResponseEntity<List<BookDTO>> getAllBooksByUID(@PathVariable boolean isRequest)
     {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int uid = Math.toIntExact(jwt.getClaim("uid"));
+        int uid = JwtUtility.getUid();
 
         try {
             ApplicationUser user = userService.getUserById(uid);
             if(user == null)
-            {
                 return ResponseEntity.internalServerError().build();
-            }
 
             List<Book> books = user.getBooks();
 
-            books = books
-                    .stream()
-                    .filter((Book b)->b.getIsRequest()==isRequest)
-                    .collect(Collectors.toList());
+            books = bookService.filterBooksByRequest(isRequest, books);
 
             return ResponseEntity.ok(bookService.booklistToBookDTOlist(books));
         } catch (Exception e)

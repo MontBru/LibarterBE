@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -51,7 +53,18 @@ public class AuthenticationService {
     @Autowired
     private PasswordResetTokenRepository resetTokenRepository;
 
+    private boolean isPhoneNumberValid(String phoneNumber)
+    {
+        String regexPattern = "^(\\+359|0)\\d{9}$";
+        Pattern pattern = Pattern.compile(regexPattern);
+        Matcher matcher = pattern.matcher(phoneNumber);
+        return matcher.matches();
+    }
+
     public ApplicationUser registerUser(String username, String password, String email, String phoneNumber){
+        if (isPhoneNumberValid(phoneNumber))
+            return null;
+
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
 
@@ -64,27 +77,20 @@ public class AuthenticationService {
         return userRepository.save(new ApplicationUser(0, encodedPassword, email, username, phoneNumber, authorities));
     }
 
-    public String loginUser(String username, String password){
+    public String loginUser(String username, String password) throws AuthenticationException{
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+        ApplicationUser user = userService.getUserByUsername(username);
 
-        try{
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
-            ApplicationUser user = userService.getUserByUsername(username);
-            String token = tokenService.generateJwt(auth, user.getId());
-
-            return token;
-
-        }catch (AuthenticationException e){
-            throw e;
-        }
-
+        return tokenService.generateJwt(auth, user.getId());
     }
 
     private String generateResetToken(ApplicationUser user) throws Exception {
         UUID uuid = UUID.randomUUID();
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime expiryDateTime = currentDateTime.plusMinutes(30);
+
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setUser(user);
         resetToken.setToken(uuid.toString());
@@ -99,26 +105,17 @@ public class AuthenticationService {
 
         if(token != null)
         {
-            String url = FrontendEndpoint.endpoint + "/reset-password/"+resetToken.getToken();
-            return url;
+            return FrontendEndpoint.endpoint + "/reset-password/"+resetToken.getToken();
         }
         else
             throw new Exception("Couldn't generate token");
     }
 
     public void forgotPassword(String email) throws Exception {
-        Optional<ApplicationUser> userOptional = userRepository.findByEmail(email);
-        ApplicationUser user;
-        if(userOptional.isPresent())
-            user = userOptional.get();
-        else
-            throw new Exception("User not found");
-
+        ApplicationUser user = userService.getUserByEmail(email);
         String resetLink = generateResetToken(user);
-
         String msgText = "Hello,\nDo you want to reset your password for Libarter? If so click the link:" + resetLink + "\n\n\nRegards,\nLibarter";
         emailService.sendEmail(email, "Password Reset", msgText);
-
     }
 
     private boolean tokenNotExpired(LocalDateTime time)

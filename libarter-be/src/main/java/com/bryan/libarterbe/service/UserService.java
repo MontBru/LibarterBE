@@ -35,16 +35,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("couldn't find user with this username"));
     }
 
-    public ApplicationUser getUserById(int id) {
-        Optional<ApplicationUser> userOptional = userRepository.findById(id);
-        if(userOptional.isPresent())
-            return userOptional.get();
-        else
-            return null;
+    public ApplicationUser getUserByEmail(String email) throws UsernameNotFoundException{
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Couldn't find user with this email"));
     }
-    public List<ApplicationUser> getAllUsers()
-    {
-        return userRepository.findAll();
+
+    public ApplicationUser getUserById(int id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public boolean deleteAllUsers()

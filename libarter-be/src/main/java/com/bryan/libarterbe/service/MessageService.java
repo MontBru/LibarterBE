@@ -8,6 +8,7 @@ import com.bryan.libarterbe.model.Conversation;
 import com.bryan.libarterbe.model.Message;
 import com.bryan.libarterbe.repository.ConversationRepository;
 import com.bryan.libarterbe.repository.MessageRepository;
+import com.bryan.libarterbe.utils.JwtUtility;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -59,8 +60,15 @@ public class MessageService {
             throw new Exception("not found");
     }
 
-    public List<Conversation> getAllConversationsOfUser(boolean asClient, int uid)
+    public boolean isUserInConversation(Conversation conversation, int uid)
     {
+        return !(conversation == null || (conversation.getUser().getId() != uid && conversation.getBook().getUser().getId() != uid));
+    }
+
+    public List<Conversation> getAllConversationsOfUser(boolean asClient)
+    {
+        int uid = JwtUtility.getUid();
+
         List<Conversation> conversations;
 
         if(asClient)
@@ -92,7 +100,7 @@ public class MessageService {
 
     public Message addMessage(String body, LocalDateTime time, Conversation conversation, int userId)
     {
-        if(userId != conversation.getUser().getId() && userId != conversation.getBook().getUser().getId())
+        if(isUserInConversation(conversation, userId))
             return null;
         ApplicationUser user = userService.getUserById(userId);
         if(user == null)
@@ -105,10 +113,7 @@ public class MessageService {
     public Conversation getConversationById(int id)
     {
         Optional<Conversation> conversationOptional = conversationRepository.findById(id);
-        if(conversationOptional.isPresent())
-            return conversationOptional.get();
-        else
-            return null;
+        return conversationOptional.orElse(null);
     }
 
     public Page<Message> getMessagesByConversation(int conversationId, int pageNum, int messagesPP)
@@ -130,8 +135,7 @@ public class MessageService {
 
     public List<MessageDTO> messageListToMessageDTOList(List<Message> messageList)
     {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int uid = Math.toIntExact(jwt.getClaim("uid"));
+        int uid = JwtUtility.getUid();
         return messageList.stream().map(message -> messageToMessageDTO(message, uid)).toList();
     }
 
@@ -139,8 +143,7 @@ public class MessageService {
     {
         List<Message> lastMessageList = getMessagesByConversation(conversation.getId(), 0, 1).getContent();
         MessageDTO lastMessage;
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int uid = Math.toIntExact(jwt.getClaim("uid"));
+        int uid = JwtUtility.getUid();
         if(lastMessageList.size() == 0)
             lastMessage = null;
         else

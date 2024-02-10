@@ -36,19 +36,13 @@ public class BarcodeService {
         return new BinaryBitmap(new HybridBinarizer(source));
     }
     public String readBarcode(String image) throws NotFoundException, IOException {
-        try{
-            image = filterBase64String(image);
+        image = filterBase64String(image);
 
-            BinaryBitmap bitmap = decodeBase64ToBinaryBitmap(image);
+        BinaryBitmap bitmap = decodeBase64ToBinaryBitmap(image);
 
-            Result result= new MultiFormatReader().decode(bitmap);
+        Result result= new MultiFormatReader().decode(bitmap);
 
-            return result.getText();
-        }
-        catch(Exception e)
-        {
-            throw e;
-        }
+        return result.getText();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.bryan.libarterbe.service;
+package com.bryan.libarterbe;
 
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Book;
@@ -7,11 +7,17 @@ import com.bryan.libarterbe.model.Message;
 import com.bryan.libarterbe.repository.ConversationRepository;
 import com.bryan.libarterbe.repository.MessageRepository;
 
+import com.bryan.libarterbe.service.BookService;
+import com.bryan.libarterbe.service.MessageService;
+import com.bryan.libarterbe.service.UserService;
+import com.bryan.libarterbe.utils.JwtUtility;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
@@ -89,9 +95,12 @@ public class MessageServiceTest {
     @Test
     public void testGetAllConversationsOfUser() {
         when(conversationRepository.findConversationsByUser_Id(1)).thenReturn(List.of(conversation));
+        MockedStatic<JwtUtility> utilityMockedStatic = mockStatic(JwtUtility.class);
+        when(JwtUtility.getUid()).thenReturn(1);
 
-        List<Conversation> result = messageService.getAllConversationsOfUser(true, 1);
+        List<Conversation> result = messageService.getAllConversationsOfUser(true);
 
+        utilityMockedStatic.close();
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getId());
     }
@@ -99,9 +108,12 @@ public class MessageServiceTest {
     @Test
     public void test2GetAllConversationsOfUser() {
         when(conversationRepository.findConversationsByBook_User_Id(1)).thenReturn(List.of(conversation2));
+        MockedStatic<JwtUtility> utilityMockedStatic = mockStatic(JwtUtility.class);
+        when(JwtUtility.getUid()).thenReturn(1);
 
-        List<Conversation> result = messageService.getAllConversationsOfUser(false, 1);
+        List<Conversation> result = messageService.getAllConversationsOfUser(false);
 
+        utilityMockedStatic.close();
         assertEquals(1, result.size());
         assertEquals(2, result.get(0).getId());
     }

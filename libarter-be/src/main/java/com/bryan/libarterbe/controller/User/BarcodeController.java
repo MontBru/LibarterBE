@@ -23,8 +23,7 @@ public class BarcodeController {
             return ResponseEntity.ok(barcodeService.readBarcode(image));
         }
         catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body("Couldn't read Barcode");
         }
     }
 }

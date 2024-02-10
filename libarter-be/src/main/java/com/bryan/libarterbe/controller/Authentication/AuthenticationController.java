@@ -21,25 +21,17 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    private boolean isPhoneNumberValid(String phoneNumber)
-    {
-        String regexPattern = "^(\\+359|0)\\d{9}$";
-        Pattern pattern = Pattern.compile(regexPattern);
-        Matcher matcher = pattern.matcher(phoneNumber);
-        return matcher.matches();
-    }
-
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationDTO body){
         try {
-            if (isPhoneNumberValid(body.getPhoneNumber())) {
-                authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber());
+            ApplicationUser response = authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber());
+            if(response != null)
                 return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
-            } else
-                return ResponseEntity.internalServerError().build();
+            else
+                return ResponseEntity.internalServerError().body("Phone number not valid");
         }
         catch (Exception e){
-            return ResponseEntity.internalServerError().build();//user exists
+            return ResponseEntity.internalServerError().body("User exists");
         }
     }
 
@@ -49,7 +41,7 @@ public class AuthenticationController {
             return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
         }catch (Exception e)
         {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body("Invalid credentials");
         }
     }
 
@@ -58,12 +50,11 @@ public class AuthenticationController {
     public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest emailReq)
     {
         String email = emailReq.getEmail();
-        System.out.println(email);
         try {
             authenticationService.forgotPassword(email);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.internalServerError().body("Error occurred");
         }
     }
 
@@ -74,6 +65,6 @@ public class AuthenticationController {
         if (res)
             return ResponseEntity.ok().build();
         else
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("The time to change the password has expired, try again!");
     }
 }
