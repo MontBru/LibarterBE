@@ -66,6 +66,12 @@ public class BookService {
             book.getPhotos().forEach((photo) -> {
                 storageService.deleteResource(photo);
             });
+
+            book.getTags().forEach((tag)->{
+                if(tagRepository.hasBooks(tag.getId()))
+                    tagRepository.deleteById(tag.getId());
+            });
+            book.setTags(new LinkedList<>());
             bookRepository.deleteById(id);
         }catch (Exception e)
         {

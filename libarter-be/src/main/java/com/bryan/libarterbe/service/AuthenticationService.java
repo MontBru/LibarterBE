@@ -82,7 +82,6 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(username, password)
         );
         ApplicationUser user = userService.getUserByUsername(username);
-
         return tokenService.generateJwt(auth, user.getId());
     }
 

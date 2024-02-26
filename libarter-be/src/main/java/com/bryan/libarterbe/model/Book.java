@@ -46,8 +46,8 @@ public class Book {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user")
     private ApplicationUser user;
-
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL,
+            orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Conversation> conversations = new ArrayList<Conversation>();
 
     public Book(

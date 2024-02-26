@@ -10,7 +10,6 @@ import java.util.*;
 @Entity
 @Table(name="users")
 public class ApplicationUser implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -25,13 +24,16 @@ public class ApplicationUser implements UserDetails {
 
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
+            orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Book> books = new ArrayList<Book>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
+            orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Conversation> conversations = new ArrayList<Conversation>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
+            orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<Message>();
 
     @ManyToMany(fetch = FetchType.EAGER)

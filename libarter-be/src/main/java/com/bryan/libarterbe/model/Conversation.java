@@ -19,8 +19,8 @@ public class Conversation {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user")
     private ApplicationUser user;
-
-    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL,
+            orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<Message>();
 
     public Conversation() {

@@ -67,7 +67,7 @@ public class MessageController {
 
         Conversation conversation = messageService.getConversationById(getMessagesDTO.getConversationId());
 
-        if(messageService.isUserInConversation(conversation, uid))
+        if(!messageService.isUserInConversation(conversation, uid))
             return ResponseEntity.internalServerError().build();
 
         Page<Message> messagePage = messageService.getMessagesByConversation(getMessagesDTO.getConversationId(), getMessagesDTO.getPageNum(), 10);

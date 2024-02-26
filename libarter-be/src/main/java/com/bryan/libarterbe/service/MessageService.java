@@ -100,7 +100,7 @@ public class MessageService {
 
     public Message addMessage(String body, LocalDateTime time, Conversation conversation, int userId)
     {
-        if(isUserInConversation(conversation, userId))
+        if(!isUserInConversation(conversation, userId))
             return null;
         ApplicationUser user = userService.getUserById(userId);
         if(user == null)
