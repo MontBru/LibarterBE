@@ -3,16 +3,17 @@ package com.bryan.libarterbe.DTO;
 public class RegistrationDTO {
     //DTO - data transfer object
     private String username;
-    private String email;
     private String password;
 
     private String phoneNumber;
 
-    public RegistrationDTO(String username, String email, String password, String phoneNumber) {
+    private String token;
+
+    public RegistrationDTO(String username, String password, String phoneNumber, String token) {
         this.username = username;
-        this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.token = token;
     }
 
     public String getUsername() {
@@ -31,14 +32,6 @@ public class RegistrationDTO {
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -47,11 +40,18 @@ public class RegistrationDTO {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "Registration info: " +
                 "username: '" + username + '\'' +
-                ", password: '" + password + '\''+
-                ", email: '" + email +'\'';
+                ", password: '" + password + '\'';
     }
 }

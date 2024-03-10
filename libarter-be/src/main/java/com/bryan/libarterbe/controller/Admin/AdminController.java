@@ -17,13 +17,13 @@ public class AdminController {
         return "Admin level access";
     }
 
-    @DeleteMapping("/deleteAllUsers")
-    public ResponseEntity<String> deleteAllUsers(){
-        if(userService.deleteAllUsers() == true)
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.internalServerError().build();
-    }
+//    @DeleteMapping("/deleteAllUsers")
+//    public ResponseEntity<String> deleteAllUsers(){
+//        if(userService.deleteAllUsers() == true)
+//            return ResponseEntity.ok().build();
+//        else
+//            return ResponseEntity.internalServerError().build();
+//    }
 
 
 }

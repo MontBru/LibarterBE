@@ -21,14 +21,26 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
 
+    @PostMapping("/requestRegister")
+    public ResponseEntity<String> requestRegister(@RequestBody EmailRequest emailReq)
+    {
+        String email = emailReq.getEmail();
+        try {
+            authenticationService.requestRegister(email);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error occurred");
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationDTO body){
         try {
-            ApplicationUser response = authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail(), body.getPhoneNumber());
+            ApplicationUser response = authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getPhoneNumber(), body.getToken());
             if(response != null)
                 return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
             else
-                return ResponseEntity.internalServerError().body("Phone number not valid");
+                return ResponseEntity.internalServerError().body("Phone number not valid or token not valid");
         }
         catch (Exception e){
             return ResponseEntity.internalServerError().body("User exists");

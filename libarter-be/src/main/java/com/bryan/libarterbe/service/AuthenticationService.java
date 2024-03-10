@@ -3,8 +3,10 @@ package com.bryan.libarterbe.service;
 import com.bryan.libarterbe.configuration.FrontendEndpoint;
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.PasswordResetToken;
+import com.bryan.libarterbe.model.RegisterToken;
 import com.bryan.libarterbe.model.Role;
 import com.bryan.libarterbe.repository.PasswordResetTokenRepository;
+import com.bryan.libarterbe.repository.RegisterTokenRepository;
 import com.bryan.libarterbe.repository.RoleRepository;
 import com.bryan.libarterbe.repository.UserRepository;
 import jakarta.persistence.PreRemove;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +56,9 @@ public class AuthenticationService {
     @Autowired
     private PasswordResetTokenRepository resetTokenRepository;
 
+    @Autowired
+    private RegisterTokenRepository registerTokenRepository;
+
     private boolean isPhoneNumberValid(String phoneNumber)
     {
         String regexPattern = "^(\\+359|0)\\d{9}$";
@@ -61,9 +67,47 @@ public class AuthenticationService {
         return matcher.matches();
     }
 
-    public ApplicationUser registerUser(String username, String password, String email, String phoneNumber){
-        if (isPhoneNumberValid(phoneNumber))
+    private String generateRegisterToken(String email) {
+        UUID uuid = UUID.randomUUID();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime expiryDateTime = currentDateTime.plusMinutes(30);
+
+        RegisterToken registerToken = new RegisterToken();
+        registerToken.setToken(uuid.toString());
+        registerToken.setExpiryDateTime(expiryDateTime);
+        registerToken.setEmail(email);
+
+        registerTokenRepository.save(registerToken);
+
+        return FrontendEndpoint.endpoint + "/register-token/"+registerToken.getToken();
+    }
+
+    public void requestRegister(String email)
+    {
+        ApplicationUser user;
+        try {
+            user = userService.getUserByEmail(email);
+        }catch (UsernameNotFoundException e){
+            user = null;
+        }
+        if (user != null)
+            return;
+        String registerLink = generateRegisterToken(email);
+        String msgText = "Hello,\nDo you want to register to Libarter? If so click the link:" + registerLink + "\n\n\nRegards,\nLibarter";
+        emailService.sendEmail(email, "Register to Libarter", msgText);
+    }
+
+
+    public ApplicationUser registerUser(String username, String password, String phoneNumber, String token){
+        RegisterToken registerToken = registerTokenRepository.findByToken(token);
+        if(registerToken == null || !tokenNotExpired(registerToken.getExpiryDateTime()))
             return null;
+
+
+        if (!isPhoneNumberValid(phoneNumber))
+            return null;
+
+        String email = registerToken.getEmail();
 
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
@@ -85,7 +129,7 @@ public class AuthenticationService {
         return tokenService.generateJwt(auth, user.getId());
     }
 
-    private String generateResetToken(ApplicationUser user) throws Exception {
+    private String generateResetToken(ApplicationUser user) {
         UUID uuid = UUID.randomUUID();
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime expiryDateTime = currentDateTime.plusMinutes(30);
@@ -100,14 +144,9 @@ public class AuthenticationService {
         {
             resetToken.setId(existingToken.getId());
         }
-        PasswordResetToken token = resetTokenRepository.save(resetToken);
+        resetTokenRepository.save(resetToken);
 
-        if(token != null)
-        {
-            return FrontendEndpoint.endpoint + "/reset-password/"+resetToken.getToken();
-        }
-        else
-            throw new Exception("Couldn't generate token");
+        return FrontendEndpoint.endpoint + "/reset-password/"+resetToken.getToken();
     }
 
     public void forgotPassword(String email) throws Exception {
