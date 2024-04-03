@@ -35,7 +35,7 @@ public class Book {
     private String language;
     private int yearPublished;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name="book_tag_junction",
             joinColumns = {@JoinColumn(name="book_id")},
@@ -43,7 +43,7 @@ public class Book {
     )
     private List<Tag> tags;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     private ApplicationUser user;
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL,

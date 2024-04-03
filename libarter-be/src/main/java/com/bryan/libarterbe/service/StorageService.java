@@ -9,7 +9,12 @@ import com.azure.storage.blob.models.BlobStorageException;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class StorageService {
@@ -32,7 +37,13 @@ public class StorageService {
     {
         try {
             BlobClient blobClient = containerClient.getBlobClient(filename);
-            return blobClient.downloadContent().toString();
+            LocalDateTime start = LocalDateTime.now();
+            BinaryData binaryData = blobClient.downloadContent();
+            LocalDateTime end = LocalDateTime.now();
+            Duration totalTime = Duration.between(start, end);
+//            System.out.println("download time: " + totalTime);
+            String base64Data = binaryData.toString();
+            return base64Data;
         }catch (Exception e)
         {
             return null;

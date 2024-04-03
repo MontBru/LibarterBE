@@ -18,18 +18,16 @@ import com.bryan.libarterbe.repository.BookRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StreamUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.text.html.Option;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -130,7 +128,7 @@ public class BookService {
                 else
                     bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
             }
-            List<BookDTO> bookDTOList = booklistToBookDTOlist(bookPage.getContent());
+            List<BookDTO> bookDTOList = booklistToBookCardDTOlist(bookPage.getContent());
 
             return ResponseEntity.ok(new BookPageDTO(bookDTOList, bookPage.getTotalPages()));
         }
@@ -155,13 +153,95 @@ public class BookService {
         return tags;
     }
 
+
+
+    private String compressImage(String image, boolean isThumbnail) {
+        //convert image to BufferedImage
+        int commaIndex = image.indexOf(",");
+        if (commaIndex != -1)
+            image = image.substring(commaIndex + 1);
+
+
+//        image = image.replace("data:image/png;base64,", "");
+        System.out.println(image.substring(0,70));
+
+        byte[] imageBytes = Base64.getDecoder().decode(image);
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
+        BufferedImage originalImage;
+        try {
+            originalImage = ImageIO.read(inputStream);
+        }catch (Exception e)
+        {
+            return "";
+        }
+
+        //get min and max sizes
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+
+        int maxSize;
+        int minSize = 1;
+
+        if(isThumbnail)
+            maxSize = 400;
+        else
+            maxSize = 1300;
+
+        //get new sizes for image
+        int newHeight = originalHeight;
+        int newWidth = originalWidth;
+
+        if(originalHeight > maxSize || originalWidth > maxSize){
+            if(originalHeight>originalWidth)
+            {
+                newHeight = maxSize;
+                newWidth = newHeight * originalWidth / originalHeight;
+                if(newWidth < minSize)
+                    newWidth = minSize;
+            }
+            else
+            {
+                newWidth = maxSize;
+                newHeight = newWidth * originalHeight / originalWidth;
+                if(newHeight < minSize)
+                    newHeight = minSize;
+            }
+        }
+
+        //compress image
+        Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        //convert Image to Base64
+        BufferedImage bufferedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
+        g2d.drawImage(resizedImage, 0, 0, newWidth, newHeight, null);
+        g2d.dispose();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "jpg", byteArrayOutputStream);
+        } catch (IOException e) {
+            return "";
+        }
+        byte[] compressedImgBytes = byteArrayOutputStream.toByteArray();
+        return "data:image/png;base64," + Base64.getEncoder().encodeToString(compressedImgBytes);
+    }
+
     private List<String> addPhotosToStorage(List<String> photos, int uid)
     {
         List<String> res = new LinkedList<>();
+        if(photos.isEmpty())
+        {
+            return res;
+        }
+        String thumbnailPhoto = photos.get(0);
+        thumbnailPhoto = compressImage(thumbnailPhoto, true);
+        photos.add(0, thumbnailPhoto);
         for(int i = 0; i<photos.size();i++)
         {
             String filename = storageService.generateFilename(uid, i);
-            storageService.writeResource(filename, photos.get(i));
+            System.out.println(filename);
+            storageService.writeResource(filename, compressImage(photos.get(i), false));
             res.add(filename);
         }
         return res;
@@ -339,11 +419,11 @@ public class BookService {
         return bookInfo;
     }
 
-    public BookDTO bookToBookDTO(Book book) {
+    public BookDTO bookToBookCardDTO(Book book){
         List<String> photos = new LinkedList<>();
-        book.getPhotos().forEach((photo)->{
-            photos.add(storageService.readResource(photo));
-        });
+        List<String> photoLinks = book.getPhotos();
+        if(!photoLinks.isEmpty())
+            photos.add(storageService.readResource(photoLinks.get(0)));
         return new BookDTO(
                 book.getId(),
                 book.getIsRequest(),
@@ -363,6 +443,38 @@ public class BookService {
         );
     }
 
+    public BookDTO bookToBookDTO(Book book) {
+        List<String> photos = new LinkedList<>();
+        List<String> photoLinks = book.getPhotos();
+        photoLinks.forEach((photo)->{
+            photos.add(storageService.readResource(photo));
+        });
+
+        return new BookDTO(
+                book.getId(),
+                book.getIsRequest(),
+                book.getName(),
+                book.getAuthor(),
+                book.getDescription(),
+                book.getPrice(),
+                book.getUser().getId(),
+                photos,
+                book.isAcceptsTrade(),
+                book.isNew(),
+                book.getIsbn(),
+                book.getTags().stream().map((Tag tag) -> tag.getText()).collect(Collectors.toList()),
+                book.getPublisher(),
+                book.getLanguage(),
+                book.getYearPublished()
+        );
+    }
+
+    public List<BookDTO> booklistToBookCardDTOlist(List<Book> books)
+    {
+        return books.stream()
+                .map(this::bookToBookCardDTO)
+                .collect(Collectors.toList());
+    }
     public List<BookDTO> booklistToBookDTOlist(List<Book> books)
     {
         return books.stream()
