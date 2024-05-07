@@ -1,6 +1,7 @@
 package com.bryan.libarterbe.service;
 
 import com.bryan.libarterbe.DTO.*;
+import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.model.Book;
 import com.bryan.libarterbe.model.Tag;
 import com.bryan.libarterbe.repository.TagRepository;
@@ -252,6 +253,10 @@ public class BookService {
         List<Tag> tags=stringsToTags(bookDTO.getTags());
         try {
             int uid = JwtUtility.getUid();
+
+            ApplicationUser user = userService.getUserById(uid);
+            if(user.getBooks().size() >= 20)
+                throw new Exception("User can't add more books");
 
             List<String> photos = addPhotosToStorage(bookDTO.getPhotos(), bookDTO.getUserId());
 
