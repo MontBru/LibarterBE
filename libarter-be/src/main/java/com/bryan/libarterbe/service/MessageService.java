@@ -166,7 +166,7 @@ public class MessageService {
 
     public List<ConversationDTO> conversationListToConversationDTOList(List<Conversation> conversationList)
     {
-        return conversationList.stream().map(conversation -> conversationToConversationDTO(conversation)).filter((conversation)->conversation.getLastMessage()!=null).sorted((conversation1, conversation2)->-conversation1.getLastMessage().getTime().compareTo(conversation2.getLastMessage().getTime())).collect(Collectors.toList());
+        return conversationList.stream().map(conversation -> conversationToConversationDTO(conversation)).filter((conversation)->conversation.lastMessage()!=null).sorted((conversation1, conversation2)->-conversation1.lastMessage().time().compareTo(conversation2.lastMessage().time())).collect(Collectors.toList());
     }
 
 

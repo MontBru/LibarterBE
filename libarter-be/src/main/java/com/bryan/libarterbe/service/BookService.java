@@ -91,7 +91,7 @@ public class BookService {
     public List<BookDTO> searchSuggestedBooks(BookDTO bookDTO)
     {
         Sort sort;
-        if(bookDTO.getIsRequest())
+        if(bookDTO.isRequest())
             sort = Sort.by(Sort.Order.asc("price"));
         else
             sort = Sort.by(Sort.Order.desc("price"));
@@ -100,9 +100,9 @@ public class BookService {
 
         Page<Book> bookPage;
         if(bookDTO.isNew())
-            bookPage = bookRepository.findBooksByNameContainingAndAuthorContainingAndLanguageContainingAndIsNewIsAndIsRequestIs(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getLanguage(), bookDTO.isNew(), !bookDTO.getIsRequest(), pageable);
+            bookPage = bookRepository.findBooksByNameContainingAndAuthorContainingAndLanguageContainingAndIsNewIsAndIsRequestIs(bookDTO.name(), bookDTO.author(), bookDTO.language(), bookDTO.isNew(), !bookDTO.isRequest(), pageable);
         else
-            bookPage = bookRepository.findBooksByNameContainingAndAuthorContainingAndLanguageContainingAndIsRequestIs(bookDTO.getName(), bookDTO.getAuthor(), bookDTO.getLanguage(), !bookDTO.getIsRequest(), pageable);
+            bookPage = bookRepository.findBooksByNameContainingAndAuthorContainingAndLanguageContainingAndIsRequestIs(bookDTO.name(), bookDTO.author(), bookDTO.language(), !bookDTO.isRequest(), pageable);
 
         List<BookDTO> bookDTOList = booklistToBookDTOlist(bookPage.getContent());
 
@@ -111,23 +111,23 @@ public class BookService {
     public ResponseEntity<BookPageDTO> searchBooks(SearchBooksDTO body, int searchType, boolean isRequest)
     {
         try {
-            Pageable pageable = PageRequest.of(body.getPageNum(), 20);
+            Pageable pageable = PageRequest.of(body.pageNum(), 20);
             Page<Book> bookPage;
             if (searchType == 1) {
                 if (isRequest == false)
-                    bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalseOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+                    bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalseOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.searchTerm(), body.minPrice(), body.maxPrice(), body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
                 else
-                    bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrueOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+                    bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrueOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.searchTerm(), body.minPrice(), body.maxPrice(), body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
             } else if (searchType == 2) {
                 if (isRequest == false)
-                    bookPage = bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+                    bookPage = bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
                 else
-                    bookPage = bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+                    bookPage = bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
             } else {
                 if (isRequest == false)
-                    bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+                    bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
                 else
-                    bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.getSearchTerm(), body.getMinPrice(), body.getMaxPrice(), pageable);
+                    bookPage = bookRepository.findBooksByTagsTextContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
             }
             List<BookDTO> bookDTOList = booklistToBookCardDTOlist(bookPage.getContent());
 
@@ -250,7 +250,7 @@ public class BookService {
 
     public Book addBook(BookDTO bookDTO) throws Exception
     {
-        List<Tag> tags=stringsToTags(bookDTO.getTags());
+        List<Tag> tags=stringsToTags(bookDTO.tags());
         try {
             int uid = JwtUtility.getUid();
 
@@ -258,23 +258,23 @@ public class BookService {
             if(user.getBooks().size() >= 20)
                 throw new Exception("User can't add more books");
 
-            List<String> photos = addPhotosToStorage(bookDTO.getPhotos(), bookDTO.getUserId());
+            List<String> photos = addPhotosToStorage(bookDTO.photos(), bookDTO.userId());
 
             Book book = new Book(
-                    bookDTO.getIsRequest(),
-                    bookDTO.getName(),
-                    bookDTO.getAuthor(),
-                    bookDTO.getDescription(),
-                    bookDTO.getPrice(),
+                    bookDTO.isRequest(),
+                    bookDTO.name(),
+                    bookDTO.author(),
+                    bookDTO.description(),
+                    bookDTO.price(),
                     userService.getUserById(Math.toIntExact(uid)),
                     photos,
-                    bookDTO.isAcceptsTrade(),
+                    bookDTO.acceptsTrade(),
                     bookDTO.isNew(),
-                    bookDTO.getIsbn(),
+                    bookDTO.isbn(),
                     tags,
-                    bookDTO.getPublisher(),
-                    bookDTO.getLanguage(),
-                    bookDTO.getYearPublished());
+                    bookDTO.publisher(),
+                    bookDTO.language(),
+                    bookDTO.yearPublished());
 
             saveBook(book);
 
@@ -296,30 +296,30 @@ public class BookService {
         if(uid != existingBook.getUser().getId())
             throw new Exception();
 
-        List<Tag> tags=stringsToTags(bookDTO.getTags());
+        List<Tag> tags=stringsToTags(bookDTO.tags());
 
         existingBook.getPhotos().forEach((photo)->{
             storageService.deleteResource(photo);
         });
 
-        List<String> photos = addPhotosToStorage(bookDTO.getPhotos(), bookDTO.getUserId());
+        List<String> photos = addPhotosToStorage(bookDTO.photos(), bookDTO.userId());
 
         existingBook = new Book(
                 id,
-                bookDTO.getIsRequest(),
-                bookDTO.getName(),
-                bookDTO.getAuthor(),
-                bookDTO.getDescription(),
-                bookDTO.getPrice(),
+                bookDTO.isRequest(),
+                bookDTO.name(),
+                bookDTO.author(),
+                bookDTO.description(),
+                bookDTO.price(),
                 userService.getUserById(uid),
                 photos,
-                bookDTO.isAcceptsTrade(),
+                bookDTO.acceptsTrade(),
                 bookDTO.isNew(),
-                bookDTO.getIsbn(),
+                bookDTO.isbn(),
                 tags,
-                bookDTO.getPublisher(),
-                bookDTO.getLanguage(),
-                bookDTO.getYearPublished()
+                bookDTO.publisher(),
+                bookDTO.language(),
+                bookDTO.yearPublished()
                 );
 
         saveBook(existingBook);
@@ -393,17 +393,17 @@ public class BookService {
         BookAPIResponseDTO bookAPIInfo = gson.fromJson(jsonResponse, BookAPIResponseDTO.class);
 
         //try to get year else return 0
-        int yearPublished = getYearFromAPIReturnedYear(bookAPIInfo.getPublish_date());
+        int yearPublished = getYearFromAPIReturnedYear(bookAPIInfo.publish_date());
 
         Pattern patternGetName = Pattern.compile("^.*name=([^},\\,]*)[},\\,]");
 
-        String authorName = getNameWithPattern(bookAPIInfo.getAuthors().get(0).toString(), patternGetName);
-        String publisherName = getNameWithPattern(bookAPIInfo.getPublishers().get(0).toString(), patternGetName);
+        String authorName = getNameWithPattern(bookAPIInfo.authors().get(0).toString(), patternGetName);
+        String publisherName = getNameWithPattern(bookAPIInfo.publishers().get(0).toString(), patternGetName);
 
         BookInfoDTO bookInfo = new BookInfoDTO(
-            bookAPIInfo.getTitle(),
+            bookAPIInfo.title(),
             authorName,
-            bookAPIInfo.getSubjects()
+            bookAPIInfo.subjects()
                     .stream()
                     .map((subject)->
                     {
@@ -435,11 +435,11 @@ public class BookService {
                 book.getName(),
                 book.getAuthor(),
                 book.getDescription(),
-                book.getPrice(),
-                book.getUser().getId(),
                 photos,
                 book.isAcceptsTrade(),
                 book.isNew(),
+                book.getPrice(),
+                book.getUser().getId(),
                 book.getIsbn(),
                 book.getTags().stream().map((Tag tag) -> tag.getText()).collect(Collectors.toList()),
                 book.getPublisher(),
@@ -461,11 +461,11 @@ public class BookService {
                 book.getName(),
                 book.getAuthor(),
                 book.getDescription(),
-                book.getPrice(),
-                book.getUser().getId(),
                 photos,
                 book.isAcceptsTrade(),
                 book.isNew(),
+                book.getPrice(),
+                book.getUser().getId(),
                 book.getIsbn(),
                 book.getTags().stream().map((Tag tag) -> tag.getText()).collect(Collectors.toList()),
                 book.getPublisher(),

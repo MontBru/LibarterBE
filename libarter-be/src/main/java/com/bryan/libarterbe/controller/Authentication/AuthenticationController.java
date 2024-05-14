@@ -24,7 +24,7 @@ public class AuthenticationController {
     @PostMapping("/requestRegister")
     public ResponseEntity<String> requestRegister(@RequestBody EmailRequest emailReq)
     {
-        String email = emailReq.getEmail();
+        String email = emailReq.email();
         try {
             authenticationService.requestRegister(email);
             return ResponseEntity.ok().build();
@@ -36,9 +36,9 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationDTO body){
         try {
-            ApplicationUser response = authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getPhoneNumber(), body.getToken());
+            ApplicationUser response = authenticationService.registerUser(body.username(), body.password(), body.phoneNumber(), body.token());
             if(response != null)
-                return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
+                return ResponseEntity.ok(authenticationService.loginUser(body.username(), body.password()));
             else
                 return ResponseEntity.internalServerError().body("Phone number not valid or token not valid");
         }
@@ -50,7 +50,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginDTO body){
         try {
-            return ResponseEntity.ok(authenticationService.loginUser(body.getUsername(), body.getPassword()));
+            return ResponseEntity.ok(authenticationService.loginUser(body.username(), body.password()));
         }catch (Exception e)
         {
             return ResponseEntity.internalServerError().body("Invalid credentials");
@@ -61,7 +61,7 @@ public class AuthenticationController {
     @PostMapping("/forgotPassword")
     public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest emailReq)
     {
-        String email = emailReq.getEmail();
+        String email = emailReq.email();
         try {
             authenticationService.forgotPassword(email);
             return ResponseEntity.ok().build();
@@ -73,7 +73,7 @@ public class AuthenticationController {
     @PostMapping("/resetPassword")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO)
     {
-        boolean res = authenticationService.resetPassword(resetPasswordDTO.getToken(), resetPasswordDTO.getNewPassword());
+        boolean res = authenticationService.resetPassword(resetPasswordDTO.token(), resetPasswordDTO.newPassword());
         if (res)
             return ResponseEntity.ok().build();
         else

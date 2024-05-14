@@ -49,11 +49,11 @@ public class MessageController {
         int uid = JwtUtility.getUid();
         Conversation conversation;
         try {
-            conversation = messageService.getConversationById(messageDTO.getConversationId());
+            conversation = messageService.getConversationById(messageDTO.conversationId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
-        Message response = messageService.addMessage(messageDTO.getBody(), LocalDateTime.now(), conversation, uid);
+        Message response = messageService.addMessage(messageDTO.body(), LocalDateTime.now(), conversation, uid);
 
         if(response == null)
             return ResponseEntity.notFound().build();
@@ -65,12 +65,12 @@ public class MessageController {
     {
         int uid = JwtUtility.getUid();
 
-        Conversation conversation = messageService.getConversationById(getMessagesDTO.getConversationId());
+        Conversation conversation = messageService.getConversationById(getMessagesDTO.conversationId());
 
         if(!messageService.isUserInConversation(conversation, uid))
             return ResponseEntity.internalServerError().build();
 
-        Page<Message> messagePage = messageService.getMessagesByConversation(getMessagesDTO.getConversationId(), getMessagesDTO.getPageNum(), 10);
+        Page<Message> messagePage = messageService.getMessagesByConversation(getMessagesDTO.conversationId(), getMessagesDTO.pageNum(), 10);
 
         return ResponseEntity.ok(new MessagePageDTO(messagePage.getTotalPages(), messageService.messageListToMessageDTOList(messagePage.getContent())));
     }
