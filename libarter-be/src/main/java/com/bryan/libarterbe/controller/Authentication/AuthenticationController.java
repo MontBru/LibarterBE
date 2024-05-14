@@ -18,8 +18,12 @@ import java.util.regex.Pattern;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationService authenticationService;
+
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/requestRegister")
     public ResponseEntity<String> requestRegister(@RequestBody EmailRequest emailReq)

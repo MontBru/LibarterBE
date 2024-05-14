@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/public/user")
 public class PublicUserController{
-    @Autowired
+
+    public PublicUserController(UserService userService) {
+        this.userService = userService;
+    }
+
     UserService userService;
 
     @GetMapping("/getById/{id}")

@@ -32,32 +32,43 @@ import java.util.regex.Pattern;
 @Transactional
 public class AuthenticationService {
 
-    @Autowired
-    private UserRepository userRepository;
+    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService, UserService userService, EmailService emailService, PasswordResetTokenRepository resetTokenRepository, RegisterTokenRepository registerTokenRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
+        this.userService = userService;
+        this.emailService = emailService;
+        this.resetTokenRepository = resetTokenRepository;
+        this.registerTokenRepository = registerTokenRepository;
+    }
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private TokenService tokenService;
 
-    @Autowired
-    private UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private EmailService emailService;
 
-    @Autowired
-    private PasswordResetTokenRepository resetTokenRepository;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private RegisterTokenRepository registerTokenRepository;
+
+    private final TokenService tokenService;
+
+
+    private final UserService userService;
+
+
+    private final EmailService emailService;
+
+
+    private final PasswordResetTokenRepository resetTokenRepository;
+
+
+    private final RegisterTokenRepository registerTokenRepository;
 
     private boolean isPhoneNumberValid(String phoneNumber)
     {

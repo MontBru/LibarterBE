@@ -35,17 +35,25 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookService {
-    @Autowired
-    private BookRepository bookRepository;
 
-    @Autowired
-    private TagRepository tagRepository;
 
-    @Autowired
-    private UserService userService;
+    public BookService(BookRepository bookRepository, TagRepository tagRepository, UserService userService, StorageService storageService) {
+        this.bookRepository = bookRepository;
+        this.tagRepository = tagRepository;
+        this.userService = userService;
+        this.storageService = storageService;
+    }
 
-    @Autowired
-    private StorageService storageService;
+    private final BookRepository bookRepository;
+
+
+    private final TagRepository tagRepository;
+
+
+    private final UserService userService;
+
+
+    private final StorageService storageService;
 
     public Book saveBook(Book book) {
         return bookRepository.save(book);

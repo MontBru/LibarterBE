@@ -10,17 +10,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    private BookRepository bookRepository;
-
-    @GetMapping("/")
-    public String helloAdminController()
-    {
-        return "Admin level access";
+    public AdminController(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
+
+
+    private final BookRepository bookRepository;
+
 
     @DeleteMapping("/deleteOffer/{id}")
     public ResponseEntity<Void> deleteOffer(@PathVariable int id)
@@ -28,14 +25,4 @@ public class AdminController {
         bookRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
-
-//    @DeleteMapping("/deleteAllUsers")
-//    public ResponseEntity<String> deleteAllUsers(){
-//        if(userService.deleteAllUsers() == true)
-//            return ResponseEntity.ok().build();
-//        else
-//            return ResponseEntity.internalServerError().build();
-//    }
-
-
 }

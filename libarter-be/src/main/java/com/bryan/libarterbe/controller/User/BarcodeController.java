@@ -13,7 +13,11 @@ import java.nio.charset.StandardCharsets;
 @RestController
 @RequestMapping("/user/barcode")
 public class BarcodeController {
-    @Autowired
+
+    public BarcodeController(BarcodeService barcodeService) {
+        this.barcodeService = barcodeService;
+    }
+
     BarcodeService barcodeService;
 
     @PostMapping("/readBarcode")

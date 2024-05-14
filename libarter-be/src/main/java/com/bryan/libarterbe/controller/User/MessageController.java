@@ -19,7 +19,10 @@ import java.util.List;
 @RequestMapping("/user/message")
 public class MessageController {
 
-    @Autowired
+    public MessageController(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
     MessageService messageService;
 
     @GetMapping("/getConversations/{asClient}")

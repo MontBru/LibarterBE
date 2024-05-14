@@ -23,14 +23,20 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    private TokenService tokenService;
+    public UserController(UserService userService, TokenService tokenService, BookService bookService) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+        this.bookService = bookService;
+    }
 
-    @Autowired
-    private BookService bookService;
+    private final UserService userService;
+
+
+    private final TokenService tokenService;
+
+
+    private final BookService bookService;
 
     @GetMapping("/")
     public ResponseEntity<String> checkAuthorization()

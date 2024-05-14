@@ -11,11 +11,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class TokenService {
-    @Autowired
-    private JwtEncoder jwtEncoder;
+    private final JwtEncoder jwtEncoder;
 
-    @Autowired
-    public JwtDecoder jwtDecoder;
+    public final JwtDecoder jwtDecoder;
+
+    public TokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
+        this.jwtEncoder = jwtEncoder;
+        this.jwtDecoder = jwtDecoder;
+    }
 
     public String generateJwt(Authentication auth, int id)
     {

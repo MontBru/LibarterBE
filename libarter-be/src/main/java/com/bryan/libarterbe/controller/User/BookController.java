@@ -26,11 +26,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user/book")
 public class BookController {
-    @Autowired
-    private BookService bookService;
 
-    @Autowired
-    private UserService userService;
+    public BookController(BookService bookService, UserService userService) {
+        this.bookService = bookService;
+        this.userService = userService;
+    }
+
+    private final BookService bookService;
+
+
+    private final UserService userService;
 
     @PostMapping("/add")
     @Transactional

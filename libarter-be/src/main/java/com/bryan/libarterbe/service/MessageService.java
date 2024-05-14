@@ -26,20 +26,28 @@ import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
-    @Autowired
+    final
     ConversationRepository conversationRepository;
 
-    @Autowired
+    final
     MessageRepository messageRepository;
 
-    @Autowired
+    final
     BookService bookService;
 
-    @Autowired
+    final
     UserService userService;
 
-    @Autowired
+    final
     StorageService storageService;
+
+    public MessageService(ConversationRepository conversationRepository, MessageRepository messageRepository, BookService bookService, UserService userService, StorageService storageService) {
+        this.conversationRepository = conversationRepository;
+        this.messageRepository = messageRepository;
+        this.bookService = bookService;
+        this.userService = userService;
+        this.storageService = storageService;
+    }
 
     public void deleteMessageById(int id)
     {

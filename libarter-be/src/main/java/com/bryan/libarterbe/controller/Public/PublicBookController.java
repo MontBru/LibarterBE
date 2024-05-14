@@ -15,7 +15,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/public/book")
 public class PublicBookController{
-    @Autowired
+
+
+    public PublicBookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     BookService bookService;
 
     @GetMapping("/getById/{id}")
