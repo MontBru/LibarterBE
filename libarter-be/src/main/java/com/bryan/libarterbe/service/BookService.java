@@ -121,12 +121,12 @@ public class BookService {
         try {
             Pageable pageable = PageRequest.of(body.pageNum(), 20);
             Page<Book> bookPage;
-            if (searchType == 1) {
+            if (body.searchType() == 1) {
                 if (isRequest == false)
                     bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalseOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.searchTerm(), body.minPrice(), body.maxPrice(), body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
                 else
                     bookPage = bookRepository.findBooksByNameContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrueOrDescriptionContainingIgnoreCaseAndPriceBetweenAndIsRequestIsTrue(body.searchTerm(), body.minPrice(), body.maxPrice(), body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
-            } else if (searchType == 2) {
+            } else if (body.searchType() == 2) {
                 if (isRequest == false)
                     bookPage = bookRepository.findBooksByAuthorContainingIgnoreCaseAndPriceBetweenAndIsRequestIsFalse(body.searchTerm(), body.minPrice(), body.maxPrice(), pageable);
                 else

@@ -4,5 +4,7 @@ public record SearchBooksDTO(boolean isRequest,
                              String searchTerm,
                              int pageNum,
                              double minPrice,
-                             double maxPrice) {
+                             double maxPrice,
+
+                             int searchType) {
 }

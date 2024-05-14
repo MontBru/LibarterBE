@@ -19,7 +19,7 @@ public class AdminController {
     private final BookRepository bookRepository;
 
 
-    @DeleteMapping("/deleteOffer/{id}")
+    @DeleteMapping("/offers/{id}")
     public ResponseEntity<Void> deleteOffer(@PathVariable int id)
     {
         bookRepository.deleteById(id);
