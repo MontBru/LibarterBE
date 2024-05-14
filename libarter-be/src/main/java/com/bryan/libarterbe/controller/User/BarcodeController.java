@@ -20,7 +20,7 @@ public class BarcodeController {
 
     BarcodeService barcodeService;
 
-    @PostMapping("/readBarcode")
+    @PostMapping
     public ResponseEntity<String> readBarcode(@RequestBody String image)
     {
         try {

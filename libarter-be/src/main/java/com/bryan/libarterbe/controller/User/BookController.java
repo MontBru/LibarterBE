@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/user/book")
+@RequestMapping("/user/books")
 public class BookController {
 
     public BookController(BookService bookService, UserService userService) {
@@ -37,7 +37,7 @@ public class BookController {
 
     private final UserService userService;
 
-    @PostMapping("/add")
+    @PostMapping
     @Transactional
     public ResponseEntity<BookDTO> add(@RequestBody BookDTO bookDTO){
         try {
@@ -49,7 +49,7 @@ public class BookController {
         }
     }
 
-    @DeleteMapping("deleteById/{id}")
+    @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<String> deleteById(@PathVariable int id){
 
@@ -64,7 +64,7 @@ public class BookController {
 
     }
 
-    @PutMapping("updateById/{id}")
+    @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody BookDTO updatedBook)
     {
@@ -77,7 +77,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/getBookByISBN/{isbn}")
+    @GetMapping("/isbn/{isbn}")
     public ResponseEntity<BookInfoDTO> getBookByISBN(@PathVariable long isbn)
     {
         try {
@@ -87,7 +87,7 @@ public class BookController {
         }
     }
 
-    @PostMapping("/getBookSuggestions")
+    @PostMapping("/getSuggestions")
     public ResponseEntity<List<BookDTO>> getBookSuggestions(@RequestBody BookDTO bookDTO)
     {
         try{

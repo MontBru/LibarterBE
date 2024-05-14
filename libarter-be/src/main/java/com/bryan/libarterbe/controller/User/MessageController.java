@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user/message")
+@RequestMapping("/user/messages")
 public class MessageController {
 
     public MessageController(MessageService messageService) {
@@ -25,14 +25,14 @@ public class MessageController {
 
     MessageService messageService;
 
-    @GetMapping("/getConversations/{asClient}")
+    @GetMapping("/conversations/{asClient}")
     public ResponseEntity<List<ConversationDTO>> getConversations(@PathVariable boolean asClient)
     {
         List<Conversation> conversations = messageService.getAllConversationsOfUser(asClient);
         return ResponseEntity.ok(messageService.conversationListToConversationDTOList(conversations));
     }
 
-    @PostMapping("/addConversation/{offerId}")
+    @PostMapping("/conversations/{offerId}")
     public ResponseEntity<Integer> addConversation(@PathVariable int offerId)
     {
         int uid = JwtUtility.getUid();
@@ -46,7 +46,7 @@ public class MessageController {
         return ResponseEntity.ok(conversation.getId());
     }
 
-    @PostMapping("/addMessage")
+    @PostMapping
     public ResponseEntity<MessageDTO> addMessage(@RequestBody MessageCreateDTO messageDTO)
     {
         int uid = JwtUtility.getUid();
@@ -63,7 +63,7 @@ public class MessageController {
         return ResponseEntity.ok(messageService.messageToMessageDTO(response, uid));
     }
 
-    @PostMapping("/getMessagesByConversation")
+    @PostMapping("/getByConversation")
     public ResponseEntity<MessagePageDTO> getMessagesByConversation(@RequestBody GetMessagesDTO getMessagesDTO)
     {
         int uid = JwtUtility.getUid();

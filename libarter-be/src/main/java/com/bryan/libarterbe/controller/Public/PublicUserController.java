@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/public/user")
+@RequestMapping("/public/users")
 public class PublicUserController{
 
     public PublicUserController(UserService userService) {
@@ -21,7 +21,7 @@ public class PublicUserController{
 
     UserService userService;
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/{id}")
     @Transactional
     public ResponseEntity<UserDTO> getUserByUID(@PathVariable int id) {
         ApplicationUser user = userService.getUserById(id);

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/public/book")
+@RequestMapping("/public/books")
 public class PublicBookController{
 
 
@@ -23,7 +23,7 @@ public class PublicBookController{
 
     BookService bookService;
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/{id}")
     @Transactional
     public ResponseEntity<BookDTO> getById(@PathVariable int id) {
         BookDTO book = bookService.getBookDTOById(id);
@@ -35,7 +35,7 @@ public class PublicBookController{
         }
     }
 
-    @PostMapping("/getBooksBySearch")
+    @PostMapping("/search")
     @Transactional
     public ResponseEntity<BookPageDTO> getBooksBySearch(@RequestBody SearchBooksDTO body)
     {

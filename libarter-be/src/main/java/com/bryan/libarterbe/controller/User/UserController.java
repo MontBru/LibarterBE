@@ -24,27 +24,23 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    public UserController(UserService userService, TokenService tokenService, BookService bookService) {
+    public UserController(UserService userService, BookService bookService) {
         this.userService = userService;
-        this.tokenService = tokenService;
         this.bookService = bookService;
     }
 
     private final UserService userService;
 
 
-    private final TokenService tokenService;
-
-
     private final BookService bookService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<String> checkAuthorization()
     {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/getLoggedUser")
+    @GetMapping("/logged")
     @Transactional
     public ResponseEntity<UserDTO> getLoggedUser(){
         int uid = JwtUtility.getUid();
@@ -58,11 +54,9 @@ public class UserController {
         {
             return ResponseEntity.internalServerError().build();
         }
-
-
     }
 
-    @GetMapping("/getAllBooksByUID/{isRequest}")
+    @GetMapping("/booksOf/{isRequest}")
     @Transactional
     public ResponseEntity<List<BookDTO>> getAllBooksByUID(@PathVariable boolean isRequest)
     {
