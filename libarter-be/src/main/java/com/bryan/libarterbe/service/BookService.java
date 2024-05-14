@@ -425,17 +425,18 @@ public class BookService {
     }
 
     public BookDTO bookToBookCardDTO(Book book){
-        List<String> photos = new LinkedList<>();
-        List<String> photoLinks = book.getPhotos();
-        if(!photoLinks.isEmpty())
-            photos.add(storageService.readResource(photoLinks.get(0)));
+//        List<String> photos = new LinkedList<>();
+//        List<String> photoLinks = book.getPhotos();
+//        if(!photoLinks.isEmpty())
+//            photos.add(storageService.readResource(photoLinks.get(0)));
         return new BookDTO(
                 book.getId(),
                 book.getIsRequest(),
                 book.getName(),
                 book.getAuthor(),
                 book.getDescription(),
-                photos,
+//                photos,
+                book.getPhotos(),
                 book.isAcceptsTrade(),
                 book.isNew(),
                 book.getPrice(),
@@ -449,11 +450,11 @@ public class BookService {
     }
 
     public BookDTO bookToBookDTO(Book book) {
-        List<String> photos = new LinkedList<>();
-        List<String> photoLinks = book.getPhotos();
-        photoLinks.forEach((photo)->{
-            photos.add(storageService.readResource(photo));
-        });
+//        List<String> photos = new LinkedList<>();
+//        List<String> photoLinks = book.getPhotos();
+//        photoLinks.forEach((photo)->{
+//            photos.add(storageService.readResource(photo));
+//        });
 
         return new BookDTO(
                 book.getId(),
@@ -461,7 +462,8 @@ public class BookService {
                 book.getName(),
                 book.getAuthor(),
                 book.getDescription(),
-                photos,
+                book.getPhotos(),
+//                photos,
                 book.isAcceptsTrade(),
                 book.isNew(),
                 book.getPrice(),
