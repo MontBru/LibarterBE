@@ -22,7 +22,7 @@ public class PublicUserController{
     public ResponseEntity<UserDTO> getUserByUID(@PathVariable int id) {
         ApplicationUser user = userService.getUserById(id);
         if(user!=null)
-            return ResponseEntity.ok(UserDTO.UserToUserDTO(user));
+            return ResponseEntity.ok(userService.UserToUserDTO(user));
         else
         {
             return ResponseEntity.notFound().build();

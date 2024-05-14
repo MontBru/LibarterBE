@@ -1,5 +1,6 @@
 package com.bryan.libarterbe.service;
 
+import com.bryan.libarterbe.DTO.UserDTO;
 import com.bryan.libarterbe.model.ApplicationUser;
 import com.bryan.libarterbe.repository.RoleRepository;
 import com.bryan.libarterbe.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -41,6 +43,13 @@ public class UserService implements UserDetailsService {
 
     public ApplicationUser getUserById(int id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    public UserDTO UserToUserDTO(ApplicationUser user)
+    {
+        return new UserDTO(user.getEmail(), user.getUsername(), user.getPhoneNumber() , user.getBooks().stream()
+                .map( book -> {return book.getId();} )
+                .collect(Collectors.toList()));
     }
 
     public boolean deleteAllUsers()

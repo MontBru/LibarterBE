@@ -46,7 +46,7 @@ public class UserController {
         ApplicationUser user = userService.getUserById(uid);
         if(user != null)
         {
-            return ResponseEntity.ok(UserDTO.UserToUserDTO(user));
+            return ResponseEntity.ok(userService.UserToUserDTO(user));
         }
         else
         {
