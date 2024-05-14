@@ -116,7 +116,7 @@ public class BookService {
 
         return bookDTOList;
     }
-    public ResponseEntity<BookPageDTO> searchBooks(SearchBooksDTO body, int searchType, boolean isRequest)
+    public ResponseEntity<BookPageDTO> searchBooks(SearchBooksDTO body, boolean isRequest)
     {
         try {
             Pageable pageable = PageRequest.of(body.pageNum(), 20);
