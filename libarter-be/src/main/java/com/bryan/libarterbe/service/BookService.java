@@ -93,6 +93,8 @@ public class BookService {
             return null;
 
         BookDTO bookDTO = bookToBookDTO(book);
+        if(bookDTO.photos().size() > 1)
+            bookDTO.photos().remove(0);
         return bookDTO;
     }
 
