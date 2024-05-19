@@ -157,12 +157,6 @@ public class MessageService {
         else
             lastMessage = messageToMessageDTO(lastMessageList.get(0), uid);
 
-//        String image;
-//        if(!conversation.getBook().getPhotos().isEmpty())
-//            image = storageService.readResource(conversation.getBook().getPhotos().get(0));
-//        else
-//            image = null;
-
         String displayName;
         if(uid == conversation.getUser().getId())
             displayName = conversation.getBook().getUser().getUsername();
@@ -170,7 +164,6 @@ public class MessageService {
             displayName = conversation.getUser().getUsername();
 
         return new ConversationDTO(conversation.getId(), conversation.getBook().getName(), displayName,
-//                image,
                 conversation.getBook().getPhotos().get(0),
                 lastMessage);
     }

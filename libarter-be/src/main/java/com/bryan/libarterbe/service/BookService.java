@@ -172,10 +172,6 @@ public class BookService {
         if (commaIndex != -1)
             image = image.substring(commaIndex + 1);
 
-
-//        image = image.replace("data:image/png;base64,", "");
-        System.out.println(image.substring(0,70));
-
         byte[] imageBytes = Base64.getDecoder().decode(image);
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
@@ -251,7 +247,6 @@ public class BookService {
         for(int i = 0; i<photos.size();i++)
         {
             String filename = storageService.generateFilename(uid, i);
-            System.out.println(filename);
             storageService.writeResource(filename, compressImage(photos.get(i), false));
             res.add(filename);
         }
@@ -435,17 +430,12 @@ public class BookService {
     }
 
     public BookDTO bookToBookCardDTO(Book book){
-//        List<String> photos = new LinkedList<>();
-//        List<String> photoLinks = book.getPhotos();
-//        if(!photoLinks.isEmpty())
-//            photos.add(storageService.readResource(photoLinks.get(0)));
         return new BookDTO(
                 book.getId(),
                 book.getIsRequest(),
                 book.getName(),
                 book.getAuthor(),
                 book.getDescription(),
-//                photos,
                 book.getPhotos(),
                 book.isAcceptsTrade(),
                 book.isNew(),
@@ -460,11 +450,6 @@ public class BookService {
     }
 
     public BookDTO bookToBookDTO(Book book) {
-//        List<String> photos = new LinkedList<>();
-//        List<String> photoLinks = book.getPhotos();
-//        photoLinks.forEach((photo)->{
-//            photos.add(storageService.readResource(photo));
-//        });
 
         return new BookDTO(
                 book.getId(),
@@ -473,7 +458,6 @@ public class BookService {
                 book.getAuthor(),
                 book.getDescription(),
                 book.getPhotos(),
-//                photos,
                 book.isAcceptsTrade(),
                 book.isNew(),
                 book.getPrice(),

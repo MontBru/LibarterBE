@@ -23,9 +23,6 @@ class Cover {
     private String medium;
     private String large;
 
-
-    // Getter Methods
-
     public String getSmall() {
         return small;
     }
@@ -37,8 +34,6 @@ class Cover {
     public String getLarge() {
         return large;
     }
-
-    // Setter Methods
 
     public void setSmall( String small ) {
         this.small = small;

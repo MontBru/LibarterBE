@@ -41,7 +41,6 @@ public class StorageService {
             BinaryData binaryData = blobClient.downloadContent();
             LocalDateTime end = LocalDateTime.now();
             Duration totalTime = Duration.between(start, end);
-//            System.out.println("download time: " + totalTime);
             String base64Data = binaryData.toString();
             return base64Data;
         }catch (Exception e)
