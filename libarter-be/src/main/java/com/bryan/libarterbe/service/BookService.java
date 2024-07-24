@@ -260,7 +260,7 @@ public class BookService {
             int uid = JwtUtility.getUid();
 
             ApplicationUser user = userService.getUserById(uid);
-            if(user.getBooks().size() >= 20)
+            if(user.getBooks().size() >= 50)
                 throw new Exception("User can't add more books");
 
             List<String> photos = addPhotosToStorage(bookDTO.photos(), bookDTO.userId());
