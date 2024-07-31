@@ -247,7 +247,13 @@ public class BookService {
         for(int i = 0; i<photos.size();i++)
         {
             String filename = storageService.generateFilename(uid, i);
-            storageService.writeResource(filename, compressImage(photos.get(i), false));
+            if(i != 0) {
+                storageService.writeResource(filename, compressImage(photos.get(i), false));
+            }
+            else
+            {
+                storageService.writeResource(filename, photos.get(0));
+            }
             res.add(filename);
         }
         return res;

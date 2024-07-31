@@ -74,7 +74,7 @@ public class BookController {
             Book savedBook=bookService.updateBook(updatedBook, id);
             return ResponseEntity.ok(bookService.bookToBookDTO(savedBook));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new BookDTO(0,false, "", "", e.getStackTrace().toString(), new ArrayList<>(), false, false, 0, 0, 0, new ArrayList<>(), "", "", 0));
+            return ResponseEntity.internalServerError().build();
         }
     }
 
