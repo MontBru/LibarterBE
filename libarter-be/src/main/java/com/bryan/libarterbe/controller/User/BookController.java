@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -66,14 +67,13 @@ public class BookController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody BookDTO updatedBook)
+    public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody BookDTO updatedBook) throws Exception
     {
         try {
             Book savedBook=bookService.updateBook(updatedBook, id);
             return ResponseEntity.ok(bookService.bookToBookDTO(savedBook));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            throw e;
         }
     }
 
