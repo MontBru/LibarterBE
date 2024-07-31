@@ -302,12 +302,40 @@ public class BookService {
             throw new Exception();
 
         List<Tag> tags=stringsToTags(bookDTO.tags());
+        List<String> updatedPhotos = existingBook.getPhotos();
 
         existingBook.getPhotos().forEach((photo)->{
-            storageService.deleteResource(photo);
+            boolean deletePhoto = true;
+            for (String newPhoto : bookDTO.photos())
+            {
+                if(photo.compareTo(newPhoto) == 0)
+                    deletePhoto = false;
+            }
+
+            if(deletePhoto) {
+                storageService.deleteResource(photo);
+                updatedPhotos.remove(photo);
+
+            }
         });
 
-        List<String> photos = addPhotosToStorage(bookDTO.photos(), bookDTO.userId());
+        List<String> photos = updatedPhotos;
+
+        List<String> newPhotos = bookDTO.photos();
+
+        for (String photo : newPhotos)
+        {
+            for(String updatedPhoto:updatedPhotos)
+            {
+                if(photo.compareTo(updatedPhoto) == 0)
+                {
+                    newPhotos.remove(photo);
+                    break;
+                }
+            }
+        }
+
+        photos.addAll(addPhotosToStorage(newPhotos, bookDTO.userId()));
 
         existingBook = new Book(
                 id,
