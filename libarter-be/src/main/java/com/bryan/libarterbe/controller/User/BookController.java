@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -67,13 +68,13 @@ public class BookController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody BookDTO updatedBook) throws Exception
+    public ResponseEntity<BookDTO> updateById(@PathVariable int id, @RequestBody BookDTO updatedBook)
     {
         try {
             Book savedBook=bookService.updateBook(updatedBook, id);
             return ResponseEntity.ok(bookService.bookToBookDTO(savedBook));
         } catch (Exception e) {
-            throw e;
+            return ResponseEntity.internalServerError().body(new BookDTO(0,false, "", "", e.toString(), new ArrayList<>(), false, false, 0, 0, 0, new ArrayList<>(), "", "", 0));
         }
     }
 
